@@ -49,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen>
     Navigator.pushReplacement(
       context,
       PageTransition(
-        duration: const Duration(seconds: 1),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
         child: const IntroScreen(),
         type: PageTransitionType.topToBottom,
