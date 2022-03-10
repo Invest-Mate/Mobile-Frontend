@@ -1,5 +1,3 @@
-// ignore_for_file: unused_field
-
 import 'package:crowd_application/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
