@@ -1,3 +1,5 @@
+import 'package:crowd_application/screens/campaign_detail/campaign_detail_screen.dart';
+import 'package:crowd_application/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,9 +12,33 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text('HOME'),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const CampaignDetailScreen(),
+                  ),
+                );
+              },
+              child: const Text('DETAIL PAGE'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+              child: const Text('Profile Page'),
+            ),
+          ],
+        ),
       ),
     );
   }
