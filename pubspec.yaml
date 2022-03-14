@@ -39,6 +39,8 @@ dependencies:
   readmore: ^2.1.0
   photo_view: ^0.13.0
   syncfusion_flutter_pdfviewer: ^19.4.54-beta
+  dotted_border: ^2.0.0+2
+  firebase_auth: ^3.3.10
 
 dev_dependencies:
   flutter_test:

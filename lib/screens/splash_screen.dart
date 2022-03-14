@@ -102,14 +102,14 @@ class _SplashScreenState extends State<SplashScreen>
                   mainAxisSize: MainAxisSize.min,
                   children: const [
                     Text(
-                      'CROW',
+                      'FUND',
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      'DIO',
+                      'ZER',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,

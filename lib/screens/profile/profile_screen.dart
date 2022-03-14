@@ -1,8 +1,12 @@
+import 'package:crowd_application/screens/auth/signup_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
+  final bool isLoggedIn = false;
+  final String defaultImg =
+      'https://media.istockphoto.com/vectors/user-avatar-profile-icon-black-vector-illustration-vector-id1209654046?k=20&m=1209654046&s=612x612&w=0&h=Atw7VdjWG8KgyST8AXXJdmBkzn0lvgqyWod9vTb2XoE=';
   final String profileImgUrl =
       'https://img.etimg.com/thumb/msid-50318894,width-650,imgsize-337990,,resizemode-4,quality-100/.jpg';
   final String userName = 'Sundar Pichai';
@@ -35,36 +39,49 @@ class ProfileScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.only(bottom: 10),
                     child: CircleAvatar(
                       radius: deviceWidth * 0.2,
-                      backgroundImage: NetworkImage(profileImgUrl),
-                    ),
-                  ),
-                  Container(
-                    constraints: BoxConstraints(maxWidth: deviceWidth * 0.4),
-                    child: FittedBox(
-                      child: Text(
-                        userName.toUpperCase(),
-                        textScaleFactor: 1.3,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      backgroundImage: NetworkImage(
+                        isLoggedIn ? profileImgUrl : defaultImg,
                       ),
                     ),
                   ),
-                  Container(
-                    constraints: BoxConstraints(maxWidth: deviceWidth * 0.8),
-                    child: FittedBox(
-                      child: Text(
-                        email,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w300,
-                          color: Colors.blueGrey,
+                  if (!isLoggedIn)
+                    ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpScreen()),
+                          );
+                        },
+                        child: const Text('Sign Up')),
+                  if (isLoggedIn)
+                    Container(
+                      constraints: BoxConstraints(maxWidth: deviceWidth * 0.4),
+                      child: FittedBox(
+                        child: Text(
+                          userName.toUpperCase(),
+                          textScaleFactor: 1.3,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
-                  )
+                  if (isLoggedIn)
+                    Container(
+                      constraints: BoxConstraints(maxWidth: deviceWidth * 0.8),
+                      child: FittedBox(
+                        child: Text(
+                          email,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w300,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
+                      ),
+                    )
                 ],
               ),
               const SizedBox(height: 30),
@@ -77,56 +94,42 @@ class ProfileScreen extends StatelessWidget {
                   // const Heading(text: 'Contact'),
                   CustomListTile(
                     title: contact,
-                    substring: '',
                     leading: const Icon(
                       Icons.phone,
                     ),
-                    function: () {},
                   ),
                   // const Heading(text: 'D.O.B'),
                   CustomListTile(
                     title: dob,
-                    substring: '',
                     leading: const Icon(
                       Icons.calendar_month,
                     ),
-                    function: () {},
                   ),
                   // const Heading(text: 'Aadhar Number'),
                   CustomListTile(
                     title: aadhar,
-                    substring: '',
                     leading:
                         const ImageIcon(AssetImage('assets/images/aadhar.png')),
-                    function: () {},
                   ),
                   // const Heading(text: 'Address'),
                   CustomListTile(
                     title: aadress,
-                    substring: '',
                     leading: const Icon(
                       Icons.pin_drop_rounded,
                     ),
-                    function: () {},
                   ),
                   const Heading(text: 'Your Cards'),
-                  CustomListTile(
+                  const CustomListTile(
                     title: '**** **** **45',
-                    substring: '',
-                    leading: const Icon(Icons.credit_card),
-                    function: () {},
+                    leading: Icon(Icons.credit_card),
                   ),
-                  CustomListTile(
+                  const CustomListTile(
                     title: '**** **** **58',
-                    substring: '',
-                    leading: const Icon(Icons.credit_card),
-                    function: () {},
+                    leading: Icon(Icons.credit_card),
                   ),
-                  CustomListTile(
+                  const CustomListTile(
                     title: '**** **** **26',
-                    substring: '',
-                    leading: const Icon(Icons.credit_card),
-                    function: () {},
+                    leading: Icon(Icons.credit_card),
                   ),
                 ],
               )
@@ -142,20 +145,20 @@ class CustomListTile extends StatelessWidget {
   const CustomListTile({
     Key? key,
     this.title = '',
-    this.substring = '',
     required this.leading,
-    required this.function,
+    // ignore: avoid_init_to_null
+    this.onTap = null,
   }) : super(key: key);
   final String title;
-  final String substring;
+
   final Widget leading;
-  final Function() function;
+  final void Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: ListTile(
-        onTap: function,
+        onTap: onTap,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -177,7 +180,7 @@ class CustomListTile extends StatelessWidget {
           child: leading,
         ),
         trailing: IconButton(
-          onPressed: function,
+          onPressed: onTap,
           icon: const Icon(
             CupertinoIcons.right_chevron,
           ),
