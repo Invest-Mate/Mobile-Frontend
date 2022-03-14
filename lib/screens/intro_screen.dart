@@ -42,12 +42,21 @@ class _IntroScreenState extends State<IntroScreen> {
     ),
     PageViewModel(
       title: "Title of third page",
-      bodyWidget: const Center(
+      bodyWidget: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.0),
-          child: Text(
-            'Crowdfunding is the practice of funding a project or venture by raising money from a large number of people, in modern times typically via the Internet.',
-            textAlign: TextAlign.center,
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Crowdfunding is the practice of funding a project or venture by raising money from a large number of people, in modern times typically via the Internet.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              ElevatedButton(onPressed: () {}, child: const Text('Sign up!'))
+            ],
           ),
         ),
       ),
@@ -63,7 +72,7 @@ class _IntroScreenState extends State<IntroScreen> {
       body: SafeArea(
         child: IntroductionScreen(
           pages: _pages,
-          done: const Text("Done",
+          done: const Text("Skip!",
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Colors.black,

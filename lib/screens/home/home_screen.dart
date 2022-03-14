@@ -1,3 +1,4 @@
+import 'package:crowd_application/screens/auth/signup_screen.dart';
 import 'package:crowd_application/screens/campaign_detail/campaign_detail_screen.dart';
 import 'package:crowd_application/screens/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,14 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: const Text('Profile Page'),
             ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) => const SignUpScreen()),
+                  );
+                },
+                child: const Text('Sign Up')),
           ],
         ),
       ),
