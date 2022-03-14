@@ -1,3 +1,4 @@
+import 'package:crowd_application/screens/home/home_screen.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
@@ -34,6 +35,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final deviceHeight = MediaQuery.of(context).size.height;
     final deviceWidth = MediaQuery.of(context).size.width;
+
+    //define functions below
+    tryLogin() {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -146,7 +154,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(0),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        tryLogin();
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Text(
@@ -181,6 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       )
                     ],
                   ),
+                  //submit with google
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: ElevatedButton(

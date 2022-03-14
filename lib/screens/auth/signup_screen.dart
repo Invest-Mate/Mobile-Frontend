@@ -1,4 +1,5 @@
 import 'package:crowd_application/screens/auth/login_screen.dart';
+import 'package:crowd_application/screens/home/home_screen.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
@@ -36,6 +37,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     final deviceHeight = MediaQuery.of(context).size.height;
     final deviceWidth = MediaQuery.of(context).size.width;
+    //define functions below
+    trySignup() {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -182,7 +189,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       onPressed: _isLoading
                           ? null
                           : () {
-                              // _signPhoneNumber();
+                              trySignup();
                             },
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
