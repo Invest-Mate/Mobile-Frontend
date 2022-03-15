@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.crowd_application">
    <application
-        android:label="crowd_application"
+        android:label="fundzer"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
