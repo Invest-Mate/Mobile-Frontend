@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     //define functions below
     tryLogin() {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     }
 

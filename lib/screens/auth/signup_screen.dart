@@ -40,7 +40,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     //define functions below
     trySignup() {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     }
 

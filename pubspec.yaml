@@ -41,6 +41,8 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^19.4.54-beta
   dotted_border: ^2.0.0+2
   firebase_auth: ^3.3.10
+  carousel_slider: ^4.0.0
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
