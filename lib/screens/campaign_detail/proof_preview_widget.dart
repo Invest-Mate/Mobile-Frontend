@@ -1,12 +1,19 @@
+import 'dart:io';
+
 import 'package:crowd_application/screens/campaign_detail/image_viewer.dart';
 import 'package:crowd_application/screens/campaign_detail/pdf_viewer.dart';
 import 'package:flutter/material.dart';
 
 class ProofPreview extends StatelessWidget {
-  const ProofPreview({Key? key, required this.fileName, required this.fileUrl})
+  const ProofPreview(
+      {Key? key,
+      required this.fileName,
+      required this.fileUrl,
+      this.isLocalFile = false})
       : super(key: key);
   final String fileName;
   final String fileUrl;
+  final bool isLocalFile;
   @override
   Widget build(BuildContext context) {
     var _isPdf = false;
@@ -20,13 +27,19 @@ class ProofPreview extends StatelessWidget {
           if (_isPdf) {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => PdfViewer(pdfUrl: fileUrl),
+                builder: (context) => PdfViewer(
+                  pdfUrl: fileUrl,
+                  isLocal: isLocalFile,
+                ),
               ),
             );
           } else {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ImageViewer(imageUrl: fileUrl),
+                builder: (context) => ImageViewer(
+                  imageUrl: fileUrl,
+                  isLocal: isLocalFile,
+                ),
               ),
             );
           }
@@ -41,25 +54,30 @@ class ProofPreview extends StatelessWidget {
           // color: Colors.amber,
           child: _isPdf
               ? Image.asset('assets/images/pdf.png')
-              : Image.network(
-                  fileUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (BuildContext context, Widget child,
-                      ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    }
-                    return Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.black,
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    );
-                  },
-                ),
+              : isLocalFile
+                  ? Image.file(
+                      File(fileUrl),
+                      fit: BoxFit.cover,
+                    ) //we send fileUrl i.e path of File
+                  : Image.network(
+                      fileUrl,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.black,
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
         ),
       ),
     );

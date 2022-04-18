@@ -1,3 +1,4 @@
+import 'package:crowd_application/screens/add_fundraiser/new_fund_screen.dart';
 import 'package:crowd_application/screens/drawer.dart';
 import 'package:crowd_application/screens/home/categories_list.dart';
 import 'package:crowd_application/screens/home/latest_funds.dart';
@@ -41,7 +42,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromRGBO(254, 161, 21, 1),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => NewFundScreen()),
+          );
+        },
         child: const Icon(
           Icons.add,
           size: 35,

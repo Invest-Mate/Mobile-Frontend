@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class ImageViewer extends StatelessWidget {
-  const ImageViewer({Key? key, required this.imageUrl}) : super(key: key);
+  const ImageViewer({Key? key, required this.imageUrl, this.isLocal = false})
+      : super(key: key);
   final String imageUrl;
+  final bool isLocal;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,9 +20,11 @@ class ImageViewer extends StatelessWidget {
         color: Colors.black,
       ),
       body: Center(
-        child: Image(
-          image: NetworkImage(imageUrl),
-        ),
+        child: isLocal
+            ? Image.file(File(imageUrl))
+            : Image(
+                image: NetworkImage(imageUrl),
+              ),
       ),
     );
   }
