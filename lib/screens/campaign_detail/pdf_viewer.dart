@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class PdfViewer extends StatelessWidget {
-  const PdfViewer({Key? key, required this.pdfUrl}) : super(key: key);
+  const PdfViewer({Key? key, required this.pdfUrl, this.isLocal = false})
+      : super(key: key);
   final String pdfUrl;
+  final bool isLocal;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,7 +16,9 @@ class PdfViewer extends StatelessWidget {
         foregroundColor: Colors.black,
       ),
       body: SafeArea(
-        child: SfPdfViewer.network(pdfUrl),
+        child: isLocal
+            ? SfPdfViewer.file(File(pdfUrl))
+            : SfPdfViewer.network(pdfUrl),
       ),
     );
   }
