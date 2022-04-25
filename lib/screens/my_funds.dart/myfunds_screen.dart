@@ -1,15 +1,15 @@
 import 'package:crowd_application/widgets/fund_item.dart';
 import 'package:flutter/material.dart';
 
-class LatestFunds extends StatefulWidget {
-  const LatestFunds({Key? key}) : super(key: key);
+class MyFundsScreen extends StatefulWidget {
+  const MyFundsScreen({Key? key}) : super(key: key);
 
   @override
-  State<LatestFunds> createState() => _LatestFundsState();
+  State<MyFundsScreen> createState() => _MyFundsScreenState();
 }
 
-class _LatestFundsState extends State<LatestFunds> {
-  final List<Map> _latestFunds = [
+class _MyFundsScreenState extends State<MyFundsScreen> {
+  final List<Map> _myfunds = [
     {
       'title': 'Save Whales',
       'imageUrl':
@@ -45,46 +45,53 @@ class _LatestFundsState extends State<LatestFunds> {
   ];
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 20.0, left: 15.0, bottom: 4),
-          child: Text(
-            'Latest CrowdFunds',
-            textAlign: TextAlign.left,
-            textScaleFactor: 1.3,
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
+        centerTitle: true,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text(
+              'My Fund',
+              style: TextStyle(
+                color: Color.fromRGBO(254, 161, 21, 1),
+              ),
+            ),
+            Text(
+              'Raisers',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            )
+          ],
         ),
-        Container(
-          // height: 100,
+      ),
+      body: SingleChildScrollView(
+        child: Container(
           constraints: const BoxConstraints(),
           width: double.maxFinite,
-          child: ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: _latestFunds.length,
-            itemBuilder: (context, i) => FundItem(
-              title: _latestFunds[i]['title'],
-              imageUrl: _latestFunds[i]['imageUrl'],
-              receivedAmount: _latestFunds[i]['receivedAmount'],
-              totalAmount: _latestFunds[i]['totalAmount'],
-              lastDate: _latestFunds[i]['lastDate'],
-            ),
-          ),
+          child: _myfunds.isNotEmpty
+              ? ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: _myfunds.length,
+                  itemBuilder: (context, i) => FundItem(
+                    title: _myfunds[i]['title'],
+                    imageUrl: _myfunds[i]['imageUrl'],
+                    receivedAmount: _myfunds[i]['receivedAmount'],
+                    totalAmount: _myfunds[i]['totalAmount'],
+                    lastDate: _myfunds[i]['lastDate'],
+                    isMyFund: true,
+                  ),
+                )
+              : const Center(
+                  child: Text("No Funds Raised."),
+                ),
         ),
-        const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Center(
-            child: Text(
-              'View more',
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-        )
-      ],
+      ),
     );
   }
 }

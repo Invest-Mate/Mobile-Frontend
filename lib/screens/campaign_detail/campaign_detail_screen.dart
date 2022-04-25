@@ -1,10 +1,13 @@
+import 'package:crowd_application/screens/analytics/analytics_screen.dart';
 import 'package:crowd_application/screens/campaign_detail/proof_preview_widget.dart';
+import 'package:crowd_application/screens/payment/enter_amount_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:readmore/readmore.dart';
 
 class CampaignDetailScreen extends StatefulWidget {
-  const CampaignDetailScreen({Key? key}) : super(key: key);
-
+  const CampaignDetailScreen({Key? key, this.isMyFund = false})
+      : super(key: key);
+  final bool isMyFund;
   @override
   State<CampaignDetailScreen> createState() => _CampaignDetailScreenState();
 }
@@ -275,8 +278,20 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                       ),
                       primary: Colors.black,
                       padding: const EdgeInsets.symmetric(vertical: 15)),
-                  onPressed: () {},
-                  child: const Text('Send Donation'),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => widget.isMyFund
+                            ? AnalyticsScreen(
+                                fundId: "",
+                                ownerId: "",
+                              )
+                            : const EnterAmountScreen(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                      widget.isMyFund ? 'View Analytics' : 'Send Donation'),
                 ),
               ),
             ],

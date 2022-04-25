@@ -23,11 +23,12 @@ class _NewFundScreenState extends State<NewFundScreen> {
   String dateString = "Select";
   File? bannerImage;
   // _proofs = upload them on document
-  List<Map<String, String>> _proofs = [];
+  final List<Map<String, String>> _proofs = [];
   // _files = Temp files stored before converting them to _proofs
-  List<FilePickerResult> _files = [];
+  final List<FilePickerResult> _files = [];
 
   bool _isUploading = false;
+
   @override
   Widget build(BuildContext context) {
     void convertFilesToProofsList() {
@@ -68,6 +69,7 @@ class _NewFundScreenState extends State<NewFundScreen> {
         );
         return;
       }
+
       setState(() {
         _isUploading = true;
       });
@@ -184,6 +186,7 @@ class _NewFundScreenState extends State<NewFundScreen> {
                             value.length <= 5) {
                           return "Please Enter a valid Name.";
                         }
+                        return null;
                       },
                       controller: _name,
                       decoration: InputDecoration(
@@ -246,6 +249,7 @@ class _NewFundScreenState extends State<NewFundScreen> {
                         if (amount > 1000000000) {
                           return "Cannot Fund that amount of money.";
                         }
+                        return null;
                       },
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
@@ -344,7 +348,7 @@ class _NewFundScreenState extends State<NewFundScreen> {
                     padding: const EdgeInsets.only(top: 20, bottom: 20),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          minimumSize: Size(double.maxFinite, 20),
+                          minimumSize: const Size(double.maxFinite, 20),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
