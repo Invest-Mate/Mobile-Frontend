@@ -1,8 +1,6 @@
+import 'package:crowd_application/screens/my_funds.dart/myfunds_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'auth/signup_screen.dart';
-import 'campaign_detail/campaign_detail_screen.dart';
 import 'profile/profile_screen.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -43,14 +41,20 @@ class MyDrawer extends StatelessWidget {
               title: 'My Profile',
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileScreen()),
                 );
               },
             ),
             const Divider(height: 3, thickness: 2, endIndent: 15, indent: 15),
             DrawerListTile(
               title: 'My Fundraisers',
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const MyFundsScreen()),
+                );
+              },
               isImageIcon: true,
               imagePath: 'assets/images/strongbox.png',
             ),

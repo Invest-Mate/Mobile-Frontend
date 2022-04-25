@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color.fromRGBO(254, 161, 21, 1),
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => NewFundScreen()),
+            MaterialPageRoute(builder: (context) => const NewFundScreen()),
           );
         },
         child: const Icon(

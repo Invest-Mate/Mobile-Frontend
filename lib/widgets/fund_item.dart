@@ -1,20 +1,22 @@
 import 'package:crowd_application/screens/campaign_detail/campaign_detail_screen.dart';
 import 'package:flutter/material.dart';
 
-class LatestFundItem extends StatelessWidget {
-  const LatestFundItem(
-      {Key? key,
-      required this.title,
-      required this.imageUrl,
-      required this.lastDate,
-      required this.totalAmount,
-      required this.receivedAmount})
-      : super(key: key);
+class FundItem extends StatelessWidget {
+  const FundItem({
+    Key? key,
+    required this.title,
+    required this.imageUrl,
+    required this.lastDate,
+    required this.totalAmount,
+    required this.receivedAmount,
+    this.isMyFund = false,
+  }) : super(key: key);
   final String title;
   final String imageUrl;
   final DateTime lastDate;
   final double totalAmount;
   final double receivedAmount;
+  final bool isMyFund;
   @override
   Widget build(BuildContext context) {
     final progress = (receivedAmount / totalAmount).toDouble();
@@ -28,7 +30,10 @@ class LatestFundItem extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-                builder: (context) => const CampaignDetailScreen()),
+              builder: (context) => CampaignDetailScreen(
+                isMyFund: isMyFund,
+              ),
+            ),
           );
         },
         child: Container(
