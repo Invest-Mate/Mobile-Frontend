@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "589097061182",
+    "project_id": "fundzer-17324",
+    "storage_bucket": "fundzer-17324.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:589097061182:android:a6af88e2b4fbc3eadf3a6f",
+        "android_client_info": {
+          "package_name": "com.example.crowd_application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "589097061182-9m7pfqpev1v04b6a10efh249m4o97b7q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.crowd_application",
+            "certificate_hash": "af6eeb2591a305d2623a6708081ebea2cb2eafa8"
+          }
+        },
+        {
+          "client_id": "589097061182-v68ttvdvi8094421vb7agdrcl0knn28o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2J0v2cOwYejY4hEwYaf3TLv3_EL5iK70"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "589097061182-v68ttvdvi8094421vb7agdrcl0knn28o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
