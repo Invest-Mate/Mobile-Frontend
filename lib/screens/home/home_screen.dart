@@ -1,5 +1,5 @@
 import 'package:crowd_application/screens/add_fundraiser/new_fund_screen.dart';
-import 'package:crowd_application/screens/drawer.dart';
+import 'package:crowd_application/widgets/drawer.dart';
 import 'package:crowd_application/screens/home/categories_list.dart';
 import 'package:crowd_application/screens/home/latest_funds.dart';
 import 'package:crowd_application/screens/home/search_bar_button.dart';

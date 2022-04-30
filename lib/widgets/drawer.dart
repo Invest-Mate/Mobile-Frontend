@@ -1,7 +1,8 @@
-import 'package:crowd_application/screens/my_funds.dart/myfunds_screen.dart';
+import 'package:crowd_application/screens/my_funds/myfunds_screen.dart';
+import 'package:crowd_application/screens/my_transactions/all_transactions_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'profile/profile_screen.dart';
+import '../screens/profile/profile_screen.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({Key? key}) : super(key: key);
@@ -62,15 +63,14 @@ class MyDrawer extends StatelessWidget {
             DrawerListTile(
               icon: Icons.monetization_on_outlined,
               title: 'Transactions',
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const MyTransactionsScreen()),
+                );
+              },
             ),
-            const Divider(height: 3, thickness: 2, endIndent: 15, indent: 15),
-            DrawerListTile(
-              isImageIcon: true,
-              imagePath: 'assets/images/book.png',
-              title: 'My Carts',
-              onTap: () {},
-            ),
+            
             const Divider(height: 3, thickness: 2, endIndent: 15, indent: 15),
             DrawerListTile(
               icon: Icons.logout,
