@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:crowd_application/widgets/fund_item.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class MyFundsScreen extends StatefulWidget {
   const MyFundsScreen({Key? key}) : super(key: key);
@@ -9,40 +14,29 @@ class MyFundsScreen extends StatefulWidget {
 }
 
 class _MyFundsScreenState extends State<MyFundsScreen> {
-  final List<Map> _myfunds = [
-    {
-      'title': 'Save Whales',
-      'imageUrl':
-          'https://ca-times.brightspotcdn.com/dims4/default/8580888/2147483647/strip/true/crop/6720x4480+0+0/resize/840x560!/quality/90/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F6a%2Fe0%2Fbbdd04f54920a6c08f0f2b27f8be%2Fla-photos-1staff-777764-me-dead-fin-whale-01-cmc.jpg',
-      'receivedAmount': 320000.0,
-      'totalAmount': 500000.0,
-      'lastDate': DateTime(2023),
-    },
-    {
-      'title': 'Cancer Treatment',
-      'imageUrl':
-          'https://www.cancer.gov/sites/g/files/xnrzdm211/files/styles/cgov_social_media/public/cgov_image/media_image/100/500/8/files/woman-with-headscarf-getting-chemo-treatment-article.jpg',
-      'receivedAmount': 220000.0,
-      'totalAmount': 500000.0,
-      'lastDate': DateTime(2022, 12, 1),
-    },
-    {
-      'title': 'Dog Shelter',
-      'imageUrl':
-          'https://media.4-paws.org/6/8/9/3/689354d6694789b45569cd647a6009e240b4afe7/VIER%20PFOTEN_2016-09-18_081-1927x1333-1920x1328.jpg',
-      'receivedAmount': 420000.0,
-      'totalAmount': 500000.0,
-      'lastDate': DateTime(2022, 4, 15),
-    },
-    {
-      'title': 'Save Paper',
-      'imageUrl':
-          'https://hhsclarionnews.com/wp-content/uploads/2020/10/1_11.jpg',
-      'receivedAmount': 120000.0,
-      'totalAmount': 500000.0,
-      'lastDate': DateTime(2022, 3, 13),
+  String userId = "625b147b8d09db8b40e19f42";
+  Future getMyFunds() async {
+    List allFunds = [];
+    final uri =
+        Uri.parse("https://fundzer.herokuapp.com/api/user/get-user/$userId");
+    final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+    final http.Response res = await http.get(uri, headers: headers);
+    final document = jsonDecode(res.body);
+    List funds = document["MyFunds"];
+    for (var fundData in funds) {
+      final uri = Uri.parse(
+          "https://fundzer.herokuapp.com/api/fund/get-fund/${fundData["_id"]}");
+      final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+      final http.Response res = await http.get(uri, headers: headers);
+
+      final document = jsonDecode(res.body);
+      allFunds.add(document["data"]);
     }
-  ];
+
+    Map result = {"status": "success", "data": allFunds};
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,13 +49,13 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
           mainAxisSize: MainAxisSize.min,
           children: const [
             Text(
-              'My Fund',
+              'My',
               style: TextStyle(
                 color: Color.fromRGBO(254, 161, 21, 1),
               ),
             ),
             Text(
-              'Raisers',
+              'Funds',
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -69,28 +63,60 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          constraints: const BoxConstraints(),
-          width: double.maxFinite,
-          child: _myfunds.isNotEmpty
-              ? ListView.builder(
+      body: FutureBuilder(
+        future: getMyFunds(),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox(
+              height: double.maxFinite,
+              width: double.maxFinite,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          if (snapshot.data["status"] != "success") {
+            return const SizedBox(
+              height: double.maxFinite,
+              width: double.maxFinite,
+              child: Center(
+                child: Text(
+                  "No funds were found.",
+                  textScaleFactor: 2,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            );
+          }
+
+          final myfunds = snapshot.data["data"];
+
+          return SingleChildScrollView(
+            child: Container(
+              constraints: const BoxConstraints(),
+              width: double.maxFinite,
+              child: ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: _myfunds.length,
-                  itemBuilder: (context, i) => FundItem(
-                    title: _myfunds[i]['title'],
-                    imageUrl: _myfunds[i]['imageUrl'],
-                    receivedAmount: _myfunds[i]['receivedAmount'],
-                    totalAmount: _myfunds[i]['totalAmount'],
-                    lastDate: _myfunds[i]['lastDate'],
-                    isMyFund: true,
-                  ),
-                )
-              : const Center(
-                  child: Text("No Funds Raised."),
-                ),
-        ),
+                  itemCount: myfunds.length,
+                  itemBuilder: (context, i) {
+                    int rAmount = myfunds[i]['receivedAmount'];
+                    int tAmount = myfunds[i]['projectedAmount'];
+                    String imageUrl =
+                        "https://fundzer.herokuapp.com/images/funds/${myfunds[i]['imageCover']}";
+                    return FundItem(
+                      title: myfunds[i]['title'],
+                      imageUrl: imageUrl,
+                      receivedAmount: rAmount.toDouble(),
+                      totalAmount: tAmount.toDouble(),
+                      lastDate: DateTime.parse(myfunds[i]['lastDate']),
+                      fundId: myfunds[i]["_id"],
+                      isMyFund: true,
+                    );
+                  }),
+            ),
+          );
+        },
       ),
     );
   }

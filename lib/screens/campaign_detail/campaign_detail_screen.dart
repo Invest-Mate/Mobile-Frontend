@@ -97,6 +97,10 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                     imageUrl:
                         "https://fundzer.herokuapp.com/images/funds/${fundData["imageCover"]}",
                     fit: BoxFit.cover,
+                    errorWidget: (context, text, err) => const Center(
+                        child: Icon(
+                      Icons.error_outline_outlined,
+                    )),
                     progressIndicatorBuilder:
                         (context, url, downloadProgress) => Center(
                       child: CircularProgressIndicator(
@@ -316,7 +320,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                             MaterialPageRoute(
                               builder: (context) => widget.isMyFund
                                   ? AnalyticsScreen(
-                                      fundId: "",
+                                      fundId: widget.fundId,
                                       ownerId: "",
                                     )
                                   : const EnterAmountScreen(),

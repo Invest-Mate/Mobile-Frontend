@@ -10,7 +10,7 @@ class FundItem extends StatelessWidget {
     required this.lastDate,
     required this.totalAmount,
     required this.receivedAmount,
-    this.fundId = "626e4c4c2e29d5c801261bdc",
+    this.fundId = "626e8076d32517e6d26b3d8c",
     this.isMyFund = false,
   }) : super(key: key);
   final String title;
@@ -58,6 +58,10 @@ class FundItem extends StatelessWidget {
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
                   alignment: Alignment.center,
+                  errorWidget: (context, text, err) => const Center(
+                      child: Icon(
+                    Icons.error_outline_outlined,
+                  )),
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
                       Center(
                     child: CircularProgressIndicator(

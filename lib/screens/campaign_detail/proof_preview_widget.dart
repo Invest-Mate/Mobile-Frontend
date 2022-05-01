@@ -66,6 +66,10 @@ class ProofPreview extends StatelessWidget {
                       imageUrl:
                           "https://fundzer.herokuapp.com/images/funds/$fileName",
                       fit: BoxFit.cover,
+                      errorWidget: (context, text, err) => const Center(
+                          child: Icon(
+                        Icons.error_outline_outlined,
+                      )),
                       progressIndicatorBuilder:
                           (context, url, downloadProgress) => Center(
                         child: CircularProgressIndicator(
