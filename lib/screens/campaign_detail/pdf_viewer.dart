@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class PdfViewer extends StatelessWidget {
-  const PdfViewer({Key? key, required this.pdfUrl, this.isLocal = false})
-      : super(key: key);
+  const PdfViewer({
+    Key? key,
+    required this.pdfUrl,
+    this.isLocal = false,
+    this.fileName = "None",
+  }) : super(key: key);
   final String pdfUrl;
+  final String fileName;
   final bool isLocal;
   @override
   Widget build(BuildContext context) {
@@ -18,7 +23,9 @@ class PdfViewer extends StatelessWidget {
       body: SafeArea(
         child: isLocal
             ? SfPdfViewer.file(File(pdfUrl))
-            : SfPdfViewer.network(pdfUrl),
+            : SfPdfViewer.network(
+                "https://fundzer.herokuapp.com/images/funds/$fileName",
+              ),
       ),
     );
   }

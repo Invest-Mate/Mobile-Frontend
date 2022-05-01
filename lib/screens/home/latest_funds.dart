@@ -1,3 +1,4 @@
+import 'package:crowd_application/screens/all_latest_funds.dart/all_funds_screen.dart';
 import 'package:crowd_application/widgets/fund_item.dart';
 import 'package:flutter/material.dart';
 
@@ -75,12 +76,22 @@ class _LatestFundsState extends State<LatestFunds> {
             ),
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.all(8.0),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Center(
-            child: Text(
-              'View more',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            child: TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AllFundsScreen(),
+                  ),
+                );
+              },
+              child: const Text(
+                'View more',
+                style:
+                    TextStyle(fontWeight: FontWeight.w500, color: Colors.black),
+              ),
             ),
           ),
         )

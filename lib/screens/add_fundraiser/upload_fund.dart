@@ -18,7 +18,6 @@ class UploadFund {
     required File bannerImage,
   }) async {
     String ipAddress = await Ipify.ipv64();
-    log("IP ADDRESS IS: " + ipAddress);
 
     // uploading initial data
     final uri = Uri.parse("https://fundzer.herokuapp.com/api/fund/create-fund");
@@ -35,8 +34,8 @@ class UploadFund {
         "projectedAmount": amount,
         "ip": ipAddress,
         "lastDate": lastdate.toIso8601String(),
-        "deadline": lastdate.toIso8601String(),
         "numOfPeople": 0,
+        "receivedAmount": 0,
       }),
     );
 
@@ -53,11 +52,6 @@ class UploadFund {
       "https://fundzer.herokuapp.com/api/fund/update-fund",
     );
 
-    log(
-      fileUploadStatusCode.toString() +
-          ", " +
-          createFundRes.statusCode.toString(),
-    );
     if (fileUploadStatusCode == 200 && createFundRes.statusCode == 201) {
       return true;
     }

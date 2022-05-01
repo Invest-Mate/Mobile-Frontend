@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_application/screens/campaign_detail/image_viewer.dart';
 import 'package:crowd_application/screens/campaign_detail/pdf_viewer.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ class ProofPreview extends StatelessWidget {
   const ProofPreview(
       {Key? key,
       required this.fileName,
-      required this.fileUrl,
+      this.fileUrl = "none",
       this.isLocalFile = false})
       : super(key: key);
   final String fileName;
@@ -30,6 +31,7 @@ class ProofPreview extends StatelessWidget {
                 builder: (context) => PdfViewer(
                   pdfUrl: fileUrl,
                   isLocal: isLocalFile,
+                  fileName: fileName,
                 ),
               ),
             );
@@ -39,6 +41,7 @@ class ProofPreview extends StatelessWidget {
                 builder: (context) => ImageViewer(
                   imageUrl: fileUrl,
                   isLocal: isLocalFile,
+                  fileName: fileName,
                 ),
               ),
             );
@@ -59,24 +62,18 @@ class ProofPreview extends StatelessWidget {
                       File(fileUrl),
                       fit: BoxFit.cover,
                     ) //we send fileUrl i.e path of File
-                  : Image.network(
-                      fileUrl,
+                  : CachedNetworkImage(
+                      imageUrl:
+                          "https://fundzer.herokuapp.com/images/funds/$fileName",
                       fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        }
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.black,
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      },
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => Center(
+                        child: CircularProgressIndicator(
+                          value: downloadProgress.progress,
+                          color: Colors.black,
+                          strokeWidth: 2,
+                        ),
+                      ),
                     ),
         ),
       ),
