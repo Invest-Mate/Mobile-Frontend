@@ -1,11 +1,18 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ImageViewer extends StatelessWidget {
-  const ImageViewer({Key? key, required this.imageUrl, this.isLocal = false})
-      : super(key: key);
+  const ImageViewer({
+    Key? key,
+    required this.imageUrl,
+    this.isLocal = false,
+    this.fileName = "None",
+  }) : super(key: key);
   final String imageUrl;
+  final String fileName;
+
   final bool isLocal;
   @override
   Widget build(BuildContext context) {
@@ -22,8 +29,9 @@ class ImageViewer extends StatelessWidget {
       body: Center(
         child: isLocal
             ? Image.file(File(imageUrl))
-            : Image(
-                image: NetworkImage(imageUrl),
+            : CachedNetworkImage(
+                imageUrl:
+                    "https://fundzer.herokuapp.com/images/funds/$fileName",
               ),
       ),
     );

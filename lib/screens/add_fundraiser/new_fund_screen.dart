@@ -34,9 +34,15 @@ class _NewFundScreenState extends State<NewFundScreen> {
   List<DropdownMenuItem<String>> dropdownItems = <String>[
     'Select Category',
     'Animal Welfare',
-    'War ',
-    'Poverty',
-    'Personal Health'
+    'War Crisis',
+    'Scientific',
+    'Education',
+    'Environmental',
+    'Financial Problem'
+        'Poverty',
+    'Personal Health',
+    'Disease',
+    'Others'
   ].map((String value) {
     return DropdownMenuItem<String>(
       value: value,
@@ -66,7 +72,9 @@ class _NewFundScreenState extends State<NewFundScreen> {
 
     Future<void> newFund() async {
       bool isValid = _formKey.currentState!.validate();
-      if (!isValid || categoryStr == "Select Category") {
+      if (!isValid) {
+        return;
+      } else if (categoryStr == "Select Category") {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -77,7 +85,6 @@ class _NewFundScreenState extends State<NewFundScreen> {
             backgroundColor: Colors.red,
           ),
         );
-        return;
       }
       if (_files.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -301,9 +308,7 @@ class _NewFundScreenState extends State<NewFundScreen> {
                         if (amount < 1000) {
                           return "Cannot Fund for less than Rs 1000.";
                         }
-                        if (amount > 1000000000) {
-                          return "Cannot Fund that amount of money.";
-                        }
+
                         return null;
                       },
                       keyboardType: TextInputType.number,

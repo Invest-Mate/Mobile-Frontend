@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_application/screens/campaign_detail/campaign_detail_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,7 @@ class FundItem extends StatelessWidget {
     required this.lastDate,
     required this.totalAmount,
     required this.receivedAmount,
+    this.fundId = "626e8076d32517e6d26b3d8c",
     this.isMyFund = false,
   }) : super(key: key);
   final String title;
@@ -17,6 +19,7 @@ class FundItem extends StatelessWidget {
   final double totalAmount;
   final double receivedAmount;
   final bool isMyFund;
+  final String fundId;
   @override
   Widget build(BuildContext context) {
     final progress = (receivedAmount / totalAmount).toDouble();
@@ -32,6 +35,7 @@ class FundItem extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => CampaignDetailScreen(
                 isMyFund: isMyFund,
+                fundId: fundId,
               ),
             ),
           );
@@ -50,9 +54,22 @@ class FundItem extends StatelessWidget {
               SizedBox(
                 height: 100,
                 width: 120,
-                child: Image.network(
-                  imageUrl,
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
                   fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                  errorWidget: (context, text, err) => const Center(
+                      child: Icon(
+                    Icons.error_outline_outlined,
+                  )),
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      Center(
+                    child: CircularProgressIndicator(
+                      value: downloadProgress.progress,
+                      color: Colors.black,
+                      strokeWidth: 2,
+                    ),
+                  ),
                 ),
               ),
               Expanded(

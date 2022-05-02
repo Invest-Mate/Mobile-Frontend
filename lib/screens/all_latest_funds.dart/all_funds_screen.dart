@@ -1,40 +1,22 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'dart:io';
 
 import 'package:crowd_application/widgets/fund_item.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class MyFundsScreen extends StatefulWidget {
-  const MyFundsScreen({Key? key}) : super(key: key);
-
-  @override
-  State<MyFundsScreen> createState() => _MyFundsScreenState();
-}
-
-class _MyFundsScreenState extends State<MyFundsScreen> {
-  String userId = "625b147b8d09db8b40e19f42";
-  Future getMyFunds() async {
-    List allFunds = [];
+class AllFundsScreen extends StatelessWidget {
+  const AllFundsScreen({Key? key}) : super(key: key);
+  Future getAllFunds() async {
     final uri =
-        Uri.parse("https://fundzer.herokuapp.com/api/user/get-user/$userId");
+        Uri.parse("https://fundzer.herokuapp.com/api/fund/get-all-funds");
     final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
     final http.Response res = await http.get(uri, headers: headers);
+
     final document = jsonDecode(res.body);
-    List funds = document["MyFunds"];
-    for (var fundData in funds) {
-      final uri = Uri.parse(
-          "https://fundzer.herokuapp.com/api/fund/get-fund/${fundData["_id"]}");
-      final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
-      final http.Response res = await http.get(uri, headers: headers);
-
-      final document = jsonDecode(res.body);
-      allFunds.add(document["data"]);
-    }
-
-    Map result = {"status": "success", "data": allFunds};
-    return result;
+    return document;
   }
 
   @override
@@ -49,13 +31,13 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
           mainAxisSize: MainAxisSize.min,
           children: const [
             Text(
-              'My',
+              '🔥Trend',
               style: TextStyle(
                 color: Color.fromRGBO(254, 161, 21, 1),
               ),
             ),
             Text(
-              'Funds',
+              'ing',
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -64,7 +46,7 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
         ),
       ),
       body: FutureBuilder(
-        future: getMyFunds(),
+        future: getAllFunds(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const SizedBox(
@@ -81,7 +63,7 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
               width: double.maxFinite,
               child: Center(
                 child: Text(
-                  "No funds were found.",
+                  "Something went wrong.",
                   textScaleFactor: 2,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
@@ -89,7 +71,7 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
             );
           }
 
-          final myfunds = snapshot.data["data"];
+          final myfunds = snapshot.data["data"]["data"];
 
           return SingleChildScrollView(
             child: Container(
@@ -111,7 +93,6 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
                       totalAmount: tAmount.toDouble(),
                       lastDate: DateTime.parse(myfunds[i]['lastDate']),
                       fundId: myfunds[i]["_id"],
-                      isMyFund: true,
                     );
                   }),
             ),
