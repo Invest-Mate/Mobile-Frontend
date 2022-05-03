@@ -1,21 +1,28 @@
+import 'package:crowd_application/screens/category_search/category_search.dart';
 import 'package:crowd_application/screens/home/category_card.dart';
 import 'package:flutter/material.dart';
 
 class CategoryList extends StatefulWidget {
   const CategoryList({Key? key}) : super(key: key);
 
-  static final List<String> _categories = [
-    'All',
-    '📚  Education',
-    '💊  Medical',
-    '🐼  Animals'
-  ];
   @override
   State<CategoryList> createState() => _CategoryListState();
 }
 
 class _CategoryListState extends State<CategoryList> {
   int _activeIndex = 0;
+  static final List<String> _categories = [
+    'All',
+    '🐼  Animal',
+    '🥷  War',
+    '⚗️  Scientific',
+    '📚  Education',
+    '🌳  Environmental',
+    '💰  Financial',
+    '😇  Poverty',
+    '🩺  Health',
+    '🤒  Disease',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +38,24 @@ class _CategoryListState extends State<CategoryList> {
             width: MediaQuery.of(context).size.width * 0.9,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: CategoryList._categories.length,
+              itemCount: _categories.length,
               itemBuilder: (context, i) => InkWell(
                 onTap: () {
                   setState(() {
                     _activeIndex = i;
                   });
+                  if (_categories[i] != "All") {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CategorySearch(
+                          categoryName: (_categories[i].substring(2)).trim(),
+                        ),
+                      ),
+                    );
+                  }
                 },
                 child: CategoryCard(
-                  cardName: CategoryList._categories[i],
+                  cardName: _categories[i],
                   itemIndex: i,
                   activeIndex: _activeIndex,
                 ),

@@ -63,8 +63,7 @@ class ProofPreview extends StatelessWidget {
                       fit: BoxFit.cover,
                     ) //we send fileUrl i.e path of File
                   : CachedNetworkImage(
-                      imageUrl:
-                          "https://fundzer.herokuapp.com/images/funds/$fileName",
+                      imageUrl: fileName,
                       fit: BoxFit.cover,
                       errorWidget: (context, text, err) => const Center(
                           child: Icon(

@@ -30,8 +30,7 @@ class ImageViewer extends StatelessWidget {
         child: isLocal
             ? Image.file(File(imageUrl))
             : CachedNetworkImage(
-                imageUrl:
-                    "https://fundzer.herokuapp.com/images/funds/$fileName",
+                imageUrl: fileName,
               ),
       ),
     );

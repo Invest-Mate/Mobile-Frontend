@@ -10,7 +10,7 @@ class FundItem extends StatelessWidget {
     required this.lastDate,
     required this.totalAmount,
     required this.receivedAmount,
-    this.fundId = "626e8076d32517e6d26b3d8c",
+    this.fundId = "626f0903ee10e016061055ad",
     this.isMyFund = false,
   }) : super(key: key);
   final String title;
