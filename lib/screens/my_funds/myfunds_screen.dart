@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:crowd_application/widgets/fund_item.dart';
@@ -14,26 +13,32 @@ class MyFundsScreen extends StatefulWidget {
 }
 
 class _MyFundsScreenState extends State<MyFundsScreen> {
-  String userId = "625b147b8d09db8b40e19f42";
+  String userId = "62671c58b807c39f20bbc4d0";
+
   Future getMyFunds() async {
-    List allFunds = [];
-    final uri =
-        Uri.parse("https://fundzer.herokuapp.com/api/user/get-user/$userId");
-    final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
-    final http.Response res = await http.get(uri, headers: headers);
-    final document = jsonDecode(res.body);
-    List funds = document["MyFunds"];
-    for (var fundData in funds) {
-      final uri = Uri.parse(
-          "https://fundzer.herokuapp.com/api/fund/get-fund/${fundData["_id"]}");
+    Map result = {};
+    try {
+      List allFunds = [];
+      final uri =
+          Uri.parse("https://fundzer.herokuapp.com/api/user/get-user/$userId");
       final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
       final http.Response res = await http.get(uri, headers: headers);
-
       final document = jsonDecode(res.body);
-      allFunds.add(document["data"]);
-    }
+      List funds = document["MyFunds"];
+      for (var fundData in funds) {
+        final uri = Uri.parse(
+            "https://fundzer.herokuapp.com/api/fund/get-fund/${fundData["_id"]}");
+        final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+        final http.Response res = await http.get(uri, headers: headers);
 
-    Map result = {"status": "success", "data": allFunds};
+        final document = jsonDecode(res.body);
+        allFunds.add(document["data"]);
+      }
+
+      result = {"status": "success", "data": allFunds};
+    } catch (e) {
+      result = {"status": "failed"};
+    }
     return result;
   }
 
@@ -82,7 +87,7 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
               child: Center(
                 child: Text(
                   "No funds were found.",
-                  textScaleFactor: 2,
+                  textScaleFactor: 1.5,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -102,8 +107,7 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
                   itemBuilder: (context, i) {
                     int rAmount = myfunds[i]['receivedAmount'];
                     int tAmount = myfunds[i]['projectedAmount'];
-                    String imageUrl =
-                        "https://fundzer.herokuapp.com/images/funds/${myfunds[i]['imageCover']}";
+                    String imageUrl = myfunds[i]['imageCover'];
                     return FundItem(
                       title: myfunds[i]['title'],
                       imageUrl: imageUrl,

@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:crowd_application/screens/all_latest_funds.dart/all_funds_screen.dart';
 import 'package:crowd_application/widgets/fund_item.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class LatestFunds extends StatefulWidget {
   const LatestFunds({Key? key}) : super(key: key);
@@ -10,40 +14,28 @@ class LatestFunds extends StatefulWidget {
 }
 
 class _LatestFundsState extends State<LatestFunds> {
-  final List<Map> _latestFunds = [
-    {
-      'title': 'Save Whales',
-      'imageUrl':
-          'https://ca-times.brightspotcdn.com/dims4/default/8580888/2147483647/strip/true/crop/6720x4480+0+0/resize/840x560!/quality/90/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F6a%2Fe0%2Fbbdd04f54920a6c08f0f2b27f8be%2Fla-photos-1staff-777764-me-dead-fin-whale-01-cmc.jpg',
-      'receivedAmount': 320000.0,
-      'totalAmount': 500000.0,
-      'lastDate': DateTime(2023),
-    },
-    {
-      'title': 'Cancer Treatment',
-      'imageUrl':
-          'https://www.cancer.gov/sites/g/files/xnrzdm211/files/styles/cgov_social_media/public/cgov_image/media_image/100/500/8/files/woman-with-headscarf-getting-chemo-treatment-article.jpg',
-      'receivedAmount': 220000.0,
-      'totalAmount': 500000.0,
-      'lastDate': DateTime(2022, 12, 1),
-    },
-    {
-      'title': 'Dog Shelter',
-      'imageUrl':
-          'https://media.4-paws.org/6/8/9/3/689354d6694789b45569cd647a6009e240b4afe7/VIER%20PFOTEN_2016-09-18_081-1927x1333-1920x1328.jpg',
-      'receivedAmount': 420000.0,
-      'totalAmount': 500000.0,
-      'lastDate': DateTime(2022, 4, 15),
-    },
-    {
-      'title': 'Save Paper',
-      'imageUrl':
-          'https://hhsclarionnews.com/wp-content/uploads/2020/10/1_11.jpg',
-      'receivedAmount': 120000.0,
-      'totalAmount': 500000.0,
-      'lastDate': DateTime(2022, 3, 13),
+  Future<Map> getLatestFunds() async {
+    Map result = {};
+    try {
+      final uri =
+          Uri.parse("https://fundzer.herokuapp.com/api/fund/get-all-funds");
+      final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+      final http.Response res = await http.get(uri, headers: headers);
+
+      final document = jsonDecode(res.body);
+      result = {
+        "status": "success",
+        "data": document["data"]["data"],
+      };
+      // return document;
+    } catch (e) {
+      result = {
+        "status": "fail",
+      };
     }
-  ];
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -59,23 +51,57 @@ class _LatestFundsState extends State<LatestFunds> {
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
-        Container(
-          // height: 100,
-          constraints: const BoxConstraints(),
-          width: double.maxFinite,
-          child: ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: _latestFunds.length,
-            itemBuilder: (context, i) => FundItem(
-              title: _latestFunds[i]['title'],
-              imageUrl: _latestFunds[i]['imageUrl'],
-              receivedAmount: _latestFunds[i]['receivedAmount'],
-              totalAmount: _latestFunds[i]['totalAmount'],
-              lastDate: _latestFunds[i]['lastDate'],
-            ),
-          ),
-        ),
+        FutureBuilder(
+            future: getLatestFunds(),
+            builder: (context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    LoadingFund(),
+                    LoadingFund(),
+                    LoadingFund(),
+                  ],
+                );
+              }
+              if (snapshot.data["status"] != "success") {
+                return const SizedBox(
+                  height: 200,
+                  child: Center(
+                    child: Text(
+                      "Something went wrong.",
+                      textScaleFactor: 2,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              }
+              final latestFunds = snapshot.data["data"];
+
+              return Container(
+                // height: 100,
+                constraints: const BoxConstraints(),
+                width: double.maxFinite,
+                child: ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: latestFunds.length > 5 ? 5 : latestFunds.length,
+                  itemBuilder: (context, i) {
+                    int rAmount = latestFunds[i]['receivedAmount'];
+                    int tAmount = latestFunds[i]['projectedAmount'];
+                    String imageUrl = latestFunds[i]['imageCover'];
+                    return FundItem(
+                      title: latestFunds[i]['title'],
+                      imageUrl: imageUrl,
+                      receivedAmount: rAmount.toDouble(),
+                      totalAmount: tAmount.toDouble(),
+                      lastDate: DateTime.parse(latestFunds[i]['lastDate']),
+                      fundId: latestFunds[i]["_id"],
+                    );
+                  },
+                ),
+              );
+            }),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Center(
@@ -83,7 +109,7 @@ class _LatestFundsState extends State<LatestFunds> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => AllFundsScreen(),
+                    builder: (context) => const AllFundsScreen(),
                   ),
                 );
               },
@@ -96,6 +122,29 @@ class _LatestFundsState extends State<LatestFunds> {
           ),
         )
       ],
+    );
+  }
+}
+
+class LoadingFund extends StatelessWidget {
+  const LoadingFund({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.maxFinite,
+      height: 100,
+      margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8.0),
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: Colors.blueGrey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }

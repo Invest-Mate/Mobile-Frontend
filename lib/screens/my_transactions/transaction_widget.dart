@@ -10,13 +10,15 @@ class TransactionItem extends StatelessWidget {
       required this.title,
       required this.date,
       required this.amount,
-      required this.transactionId})
+      required this.transactionId,
+      required this.status})
       : super(key: key);
   final String imageUrl;
   final String title;
   final DateTime date;
   final double amount;
   final String transactionId;
+  final String status;
 
   @override
   Widget build(BuildContext context) {
@@ -66,11 +68,12 @@ class TransactionItem extends StatelessWidget {
             textScaleFactor: 1,
           ),
           trailing: Text(
-            "Rs $amount",
+            "Rs " + NumberFormat.compact().format(amount),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w700,
+              color: status != "TXN_SUCCESS" ? Colors.red : Colors.green,
             ),
           ),
         ),

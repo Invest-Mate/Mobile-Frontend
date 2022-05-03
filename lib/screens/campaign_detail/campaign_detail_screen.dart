@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_application/screens/analytics/analytics_screen.dart';
 import 'package:crowd_application/screens/campaign_detail/proof_preview_widget.dart';
-import 'package:crowd_application/screens/payment/enter_amount_screen.dart';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
@@ -94,8 +94,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                     ),
                   ),
                   background: CachedNetworkImage(
-                    imageUrl:
-                        "https://fundzer.herokuapp.com/images/funds/${fundData["imageCover"]}",
+                    imageUrl: fundData["imageCover"],
                     fit: BoxFit.cover,
                     errorWidget: (context, text, err) => const Center(
                         child: Icon(
@@ -316,16 +315,16 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                             primary: Colors.black,
                             padding: const EdgeInsets.symmetric(vertical: 15)),
                         onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => widget.isMyFund
-                                  ? AnalyticsScreen(
-                                      fundId: widget.fundId,
-                                      ownerId: "",
-                                    )
-                                  : const EnterAmountScreen(),
-                            ),
-                          );
+                          if (widget.isMyFund) {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => AnalyticsScreen(
+                                  fundId: widget.fundId,
+                                  ownerId: "",
+                                ),
+                              ),
+                            );
+                          }
                         },
                         child: Text(widget.isMyFund
                             ? 'View Analytics'

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+
 import 'dart:io';
 
 import 'package:crowd_application/screens/analytics/show_widget.dart';
@@ -43,8 +44,56 @@ class AnalyticsScreen extends StatelessWidget {
         "status": "success",
       });
       return result;
-    } catch (e) {}
+    } catch (e) {
+      log(e.toString());
+    }
     return {"status": "failed"};
+  }
+
+  Future<Map> getGraphData(String fundId, DateTime creationDate) async {
+    Map result = {};
+    List<DonationsData> donations = [];
+    String initialDate = creationDate.toIso8601String();
+    initialDate = initialDate.substring(0, 10);
+    Map<String, double> datesData = {
+      initialDate: 0.0,
+    };
+    try {
+      final http.Response response1 = await http.get(
+          Uri.parse(
+            "https://fundzer.herokuapp.com/api/transaction/get-fund-transaction/$fundId",
+          ),
+          headers: {HttpHeaders.contentTypeHeader: 'application/json'});
+      final List allFundTransactions =
+          jsonDecode(response1.body)["data"]["data"];
+      // log(allFundTransactions.toString());
+      for (var fund in allFundTransactions) {
+        String date = fund["trans_date"];
+
+        date = date.substring(0, 10);
+        if (datesData[date] != null) {
+          datesData[date] = datesData[date]! + fund["amountFunded"];
+        } else {
+          datesData[date] = fund["amountFunded"].toDouble();
+        }
+      }
+      datesData.forEach(
+        (date, amount) {
+          donations.add(DonationsData(amount, DateTime.parse(date)));
+        },
+      );
+      donations.sort((a, b) => a.date.compareTo(b.date));
+
+      result = {
+        "status": "success",
+        "data": donations,
+      };
+    } catch (e) {
+      result = {
+        "status": "fail",
+      };
+    }
+    return result;
   }
 
   @override
@@ -53,34 +102,6 @@ class AnalyticsScreen extends StatelessWidget {
     int receivedAmount;
     DateTime lastDate;
     DateTime creationDate;
-    final List<DonationsData> donationsData = [
-      DonationsData(3500, DateTime.now().add(const Duration(days: 0))),
-      DonationsData(2700, DateTime.now().add(const Duration(days: 1))),
-      DonationsData(3400, DateTime.now().add(const Duration(days: 2))),
-      DonationsData(1200, DateTime.now().add(const Duration(days: 3))),
-      DonationsData(600, DateTime.now().add(const Duration(days: 4))),
-      DonationsData(4560, DateTime.now().add(const Duration(days: 5))),
-      DonationsData(3200, DateTime.now().add(const Duration(days: 6))),
-      DonationsData(6050, DateTime.now().add(const Duration(days: 7))),
-      DonationsData(6554, DateTime.now().add(const Duration(days: 8))),
-      DonationsData(8450, DateTime.now().add(const Duration(days: 9))),
-      DonationsData(6465, DateTime.now().add(const Duration(days: 10))),
-      DonationsData(9840, DateTime.now().add(const Duration(days: 11))),
-      DonationsData(684, DateTime.now().add(const Duration(days: 12))),
-      DonationsData(1585, DateTime.now().add(const Duration(days: 13))),
-      DonationsData(6000, DateTime.now().add(const Duration(days: 14))),
-      DonationsData(1568, DateTime.now().add(const Duration(days: 15))),
-      DonationsData(2568, DateTime.now().add(const Duration(days: 16))),
-      DonationsData(8568, DateTime.now().add(const Duration(days: 17))),
-      DonationsData(6568, DateTime.now().add(const Duration(days: 18))),
-      DonationsData(8568, DateTime.now().add(const Duration(days: 19))),
-      DonationsData(568, DateTime.now().add(const Duration(days: 20))),
-      DonationsData(5568, DateTime.now().add(const Duration(days: 21))),
-      DonationsData(9568, DateTime.now().add(const Duration(days: 22))),
-      DonationsData(8568, DateTime.now().add(const Duration(days: 23))),
-      DonationsData(3568, DateTime.now().add(const Duration(days: 24))),
-      DonationsData(4568, DateTime.now().add(const Duration(days: 25))),
-    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -270,23 +291,45 @@ class AnalyticsScreen extends StatelessWidget {
                         const EdgeInsets.only(top: 15, bottom: 20, right: 10),
                     height: MediaQuery.of(context).size.width * 0.6,
                     width: MediaQuery.of(context).size.width,
-                    child: SfCartesianChart(
-                      primaryXAxis: CategoryAxis(),
-                      series: <AreaSeries<DonationsData, String>>[
-                        AreaSeries<DonationsData, String>(
-                            yAxisName: "Amount",
-                            // dataLabelMapper: (datum, index) {},
-                            isVisible: true,
-                            isVisibleInLegend: false,
-                            // Bind data source
-                            color: const Color.fromRGBO(254, 161, 21, 1),
-                            dataSource: donationsData,
-                            xValueMapper: (DonationsData donations, _) =>
-                                DateFormat("dd-MMMM-yy").format(donations.date),
-                            xAxisName: "Time",
-                            yValueMapper: (DonationsData donations, _) =>
-                                donations.amount)
-                      ],
+                    child: FutureBuilder(
+                      future: getGraphData(fundId, creationDate),
+                      builder: (context, AsyncSnapshot snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: Text("Loading Data!"),
+                          );
+                        }
+                        if (snapshot.data["status"] == "failed") {
+                          return const Center(
+                            child: Text("Failed to Load Data!"),
+                          );
+                        }
+                        List<DonationsData> donationsData =
+                            snapshot.data["data"];
+                        return SfCartesianChart(
+                          primaryXAxis: CategoryAxis(),
+                          primaryYAxis:
+                              NumericAxis(numberFormat: NumberFormat.compact()),
+                          series: <AreaSeries<DonationsData, String>>[
+                            AreaSeries<DonationsData, String>(
+                                yAxisName: "Amount",
+
+                                // dataLabelMapper: (datum, index) {},
+                                isVisible: true,
+                                isVisibleInLegend: false,
+                                // Bind data source
+                                color: const Color.fromRGBO(254, 161, 21, 1),
+                                dataSource: donationsData,
+                                xValueMapper: (DonationsData donations, _) =>
+                                    DateFormat("dd-MMMM-yy")
+                                        .format(donations.date),
+                                xAxisName: "Time",
+                                yValueMapper: (DonationsData donations, _) =>
+                                    donations.amount)
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ],

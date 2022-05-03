@@ -16,9 +16,9 @@ class MyFilePicker {
 
   Future<FilePickerResult?> pickFileForProof() async {
     FilePickerResult? pickedFile = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
+      type: FileType.image,
       allowMultiple: false,
-      allowedExtensions: ["png", "pdf", "jpg", "jpeg"],
+      // allowedExtensions: ["png", "pdf", "jpg", "jpeg"],
     );
 
     return pickedFile;

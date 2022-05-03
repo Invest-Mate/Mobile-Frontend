@@ -19,6 +19,7 @@ class FileUplaod {
     var coverlength = await coverImage.length();
     // ignore: deprecated_member_use
     var coverImageStream =
+        // ignore: deprecated_member_use
         http.ByteStream(DelegatingStream.typed(coverImage.openRead()));
     var coverImageFile = http.MultipartFile(
       'imageCover',
@@ -34,6 +35,7 @@ class FileUplaod {
       var prooflength = await proof.length();
       // ignore: deprecated_member_use
       var proofStream =
+          // ignore: deprecated_member_use
           http.ByteStream(DelegatingStream.typed(proof.openRead()));
       var proofFile = http.MultipartFile(
         'proofs',

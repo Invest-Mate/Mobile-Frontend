@@ -6,22 +6,23 @@ import 'package:crowd_application/widgets/fund_item.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class AllFundsScreen extends StatelessWidget {
-  const AllFundsScreen({Key? key}) : super(key: key);
-  Future<Map> getAllFunds() async {
+class CategorySearch extends StatelessWidget {
+  const CategorySearch({Key? key, required this.categoryName})
+      : super(key: key);
+  final String categoryName;
+  Future<Map> getCategoryFunds() async {
     Map result = {};
     try {
-      final uri =
-          Uri.parse("https://fundzer.herokuapp.com/api/fund/get-all-funds");
+      final uri = Uri.parse(
+          "https://fundzer.herokuapp.com/api/fund/search?category=$categoryName");
       final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
       final http.Response res = await http.get(uri, headers: headers);
 
       final document = jsonDecode(res.body);
       result = {
         "status": "success",
-        "data": document["data"]["data"],
+        "data": document["data"],
       };
-      // return document;
     } catch (e) {
       result = {
         "status": "fail",
@@ -32,6 +33,8 @@ class AllFundsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int len = categoryName.length ~/ 2;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -40,16 +43,16 @@ class AllFundsScreen extends StatelessWidget {
         centerTitle: true,
         title: Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             Text(
-              '🔥Trend',
-              style: TextStyle(
+              categoryName.substring(0, len),
+              style: const TextStyle(
                 color: Color.fromRGBO(254, 161, 21, 1),
               ),
             ),
             Text(
-              'ing',
-              style: TextStyle(
+              categoryName.substring(len),
+              style: const TextStyle(
                 color: Colors.black,
               ),
             )
@@ -57,7 +60,7 @@ class AllFundsScreen extends StatelessWidget {
         ),
       ),
       body: FutureBuilder(
-        future: getAllFunds(),
+        future: getCategoryFunds(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const SizedBox(
@@ -74,8 +77,9 @@ class AllFundsScreen extends StatelessWidget {
               width: double.maxFinite,
               child: Center(
                 child: Text(
-                  "Something went wrong.",
-                  textScaleFactor: 2,
+                  "No funds for \nthat category found..",
+                  textScaleFactor: 1.2,
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),

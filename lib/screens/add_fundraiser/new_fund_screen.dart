@@ -23,7 +23,7 @@ class _NewFundScreenState extends State<NewFundScreen> {
 
   DateTime? lastDate = DateTime.now().add(const Duration(days: 7));
   String dateString = "Select";
-  String categoryStr = "Select Category";
+  String categoryStr = "Others";
   File? bannerImage;
   // _proofs = upload them on document
   final List<File> _proofs = [];
@@ -32,15 +32,14 @@ class _NewFundScreenState extends State<NewFundScreen> {
 
   bool _isUploading = false;
   List<DropdownMenuItem<String>> dropdownItems = <String>[
-    'Select Category',
-    'Animal Welfare',
-    'War Crisis',
+    'Animal',
+    'War',
     'Scientific',
     'Education',
     'Environmental',
-    'Financial Problem'
-        'Poverty',
-    'Personal Health',
+    'Financial',
+    'Poverty',
+    'Health',
     'Disease',
     'Others'
   ].map((String value) {
@@ -85,6 +84,17 @@ class _NewFundScreenState extends State<NewFundScreen> {
             backgroundColor: Colors.red,
           ),
         );
+      } else if (bannerImage == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Please select a Banner.",
+              textAlign: TextAlign.center,
+              textScaleFactor: 1,
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
       if (_files.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -105,7 +115,7 @@ class _NewFundScreenState extends State<NewFundScreen> {
       bool result = await fund.createNewFund(
         lastdate: lastDate!,
         title: _name.text.trim(),
-        userId: "625b147b8d09db8b40e19f42",
+        userId: "62671c58b807c39f20bbc4d0",
         amount: double.parse(_money.text.trim()),
         category: categoryStr,
         description: _description.text,
@@ -361,21 +371,32 @@ class _NewFundScreenState extends State<NewFundScreen> {
                   ),
                   // Category
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: DropdownButton<String>(
-                      value: categoryStr,
-                      menuMaxHeight: 400,
-                      dropdownColor: Colors.blueGrey[50],
-                      // focusColor: Colors.amber,
-                      elevation: 0,
-                      // icon: Icon(Icons.arrow_drop_down),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Category :",
+                          textScaleFactor: 1.5,
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        DropdownButton<String>(
+                          value: categoryStr,
+                          menuMaxHeight: 400,
+                          dropdownColor: Colors.blueGrey[50],
+                          // focusColor: Colors.amber,
+                          elevation: 0,
+                          // icon: Icon(Icons.arrow_drop_down),
 
-                      items: dropdownItems,
-                      onChanged: (val) {
-                        setState(() {
-                          categoryStr = val!;
-                        });
-                      },
+                          items: dropdownItems,
+                          onChanged: (val) {
+                            setState(() {
+                              categoryStr = val!;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   // description
