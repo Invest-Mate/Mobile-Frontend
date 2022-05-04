@@ -71,18 +71,17 @@ class _SignUpFormState extends State<SignUpForm> {
       final response = jsonDecode(createFundRes.body);
       log(response.toString());
       // uploading image files through patch
-      Timer(Duration(seconds: 5), () {
-        final file = FileUpload();
 
-        file.updateProfile(
-          profileImage: profilePic!,
-          id: userId,
-          url: "https://fundzer.herokuapp.com/api/user/update-user",
-        );
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      });
+      final file = FileUpload();
+
+      file.updateProfile(
+        profileImage: profilePic!,
+        id: userId,
+        url: "https://fundzer.herokuapp.com/api/user/update-user",
+      );
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
     } catch (e) {
       print(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(

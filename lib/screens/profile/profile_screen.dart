@@ -88,15 +88,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
               final userData = snapshot.data["data"];
               log(userData.toString());
-              profileImgUrl = userData["photo"];
-              userName = userData["name"];
-              email = userData["email"];
-              dob = DateFormat("dd-MMMM-yyyy").format(
-                DateTime.parse(userData["dob"]),
-              );
-              aadhar = userData["aadhar"];
-              aadress = userData["address"];
-              contact = userData["contact"];
+              if (userData != null) {
+                profileImgUrl = userData["photo"];
+                userName = userData["name"];
+                email = userData["email"];
+                dob = DateFormat("dd-MMMM-yyyy").format(
+                  DateTime.parse(userData["dob"]),
+                );
+                aadhar = userData["aadhar"];
+                aadress = userData["address"];
+                contact = userData["contact"];
+              }
             }
 
             return SingleChildScrollView(
