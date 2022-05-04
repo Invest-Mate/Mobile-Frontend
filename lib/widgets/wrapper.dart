@@ -25,12 +25,7 @@ class Wrapper extends StatelessWidget {
       if (document["status"] == "fail") {
         result = {"status": "userNotExist"};
       } else if (document["status"] == "success") {
-        List data = document["data"];
-        if (data.isEmpty) {
-          result = {"status": "userNotExist"};
-        } else {
-          result = {"status": "userExist"};
-        }
+        result = {"status": "userExist"};
       }
     } catch (e) {
       result = {"status": "userNotExist"};
