@@ -86,8 +86,21 @@ class CategorySearch extends StatelessWidget {
             );
           }
 
-          final myfunds = snapshot.data["data"];
-
+          final List myfunds = snapshot.data["data"];
+          if (myfunds.isEmpty) {
+            return const SizedBox(
+              height: double.maxFinite,
+              width: double.maxFinite,
+              child: Center(
+                child: Text(
+                  "No funds for \nthat category found..",
+                  textScaleFactor: 1.2,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            );
+          }
           return SingleChildScrollView(
             child: Container(
               constraints: const BoxConstraints(),

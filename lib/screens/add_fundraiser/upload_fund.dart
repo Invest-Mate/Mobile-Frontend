@@ -44,7 +44,7 @@ class UploadFund {
     log("Document id: " + documentId);
 
     // uploading image files through patch
-    final file = FileUplaod();
+    final file = FileUpload();
     int fileUploadStatusCode = await file.updateFundFiles(
       bannerImage,
       proofs,
