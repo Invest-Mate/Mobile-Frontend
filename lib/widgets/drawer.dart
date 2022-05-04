@@ -1,5 +1,7 @@
 import 'package:crowd_application/screens/my_funds/myfunds_screen.dart';
 import 'package:crowd_application/screens/my_transactions/all_transactions_screen.dart';
+import 'package:crowd_application/services/5.auth_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../screens/profile/profile_screen.dart';
@@ -70,13 +72,15 @@ class MyDrawer extends StatelessWidget {
                 );
               },
             ),
-            
             const Divider(height: 3, thickness: 2, endIndent: 15, indent: 15),
-            DrawerListTile(
-              icon: Icons.logout,
-              title: 'Log Out',
-              onTap: () {},
-            ),
+            if (FirebaseAuth.instance.currentUser != null)
+              DrawerListTile(
+                icon: Icons.logout,
+                title: 'Log Out',
+                onTap: () {
+                  AuthService.firebase().logOut();
+                },
+              ),
             Expanded(
                 child: Center(
               child: Image.asset(

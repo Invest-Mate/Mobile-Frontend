@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:circular_reveal_animation/circular_reveal_animation.dart';
+import 'package:crowd_application/screens/home/home_screen.dart';
 import 'package:crowd_application/screens/intro_screen.dart';
+import 'package:crowd_application/services/5.auth_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -51,7 +55,21 @@ class _SplashScreenState extends State<SplashScreen>
       PageTransition(
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
-        child: const IntroScreen(),
+        child: StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              if (snapshot.data == null) {
+                return const IntroScreen();
+              } else {
+                return HomeScreen();
+              }
+            }),
         type: PageTransitionType.topToBottom,
       ),
     );

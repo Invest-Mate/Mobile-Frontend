@@ -1,24 +1,55 @@
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:crowd_application/screens/add_fundraiser/upload_fund.dart';
 import 'package:crowd_application/screens/auth/signup_screen.dart';
+import 'package:crowd_application/screens/home/home_screen.dart';
+import 'package:crowd_application/utils/file_picker.dart';
+import 'package:crowd_application/utils/upload_file.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
-  final bool isLoggedIn = true;
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  File? profilePic;
   final String defaultImg =
       'https://media.istockphoto.com/vectors/user-avatar-profile-icon-black-vector-illustration-vector-id1209654046?k=20&m=1209654046&s=612x612&w=0&h=Atw7VdjWG8KgyST8AXXJdmBkzn0lvgqyWod9vTb2XoE=';
-  final String profileImgUrl =
-      'https://img.etimg.com/thumb/msid-50318894,width-650,imgsize-337990,,resizemode-4,quality-100/.jpg';
-  final String userName = 'Sundar Pichai';
-  final String email = 'therealsundarpichai@gmail.com';
-  final String dob = '20 April 2001';
-  final String aadhar = '4815 2659 1584';
-  final String aadress = 'Bramhapuri, India';
-  final String contact = '+91 48156 98452';
+
+  getUser(String userId) async {
+    Map result = {};
+    try {
+      final uri =
+          Uri.parse("https://fundzer.herokuapp.com/api/user/get-user/$userId");
+      final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
+      final http.Response res = await http.get(uri, headers: headers);
+      final document = jsonDecode(res.body);
+
+      result = {"status": "success", "data": document["data"]};
+    } catch (e) {
+      result = {
+        "status": "fail",
+      };
+    }
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final bool isLoggedIn =
+        FirebaseAuth.instance.currentUser != null ? true : false;
     final double deviceWidth = MediaQuery.of(context).size.width;
+    final userId = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -28,115 +59,151 @@ class ProfileScreen extends StatelessWidget {
           IconButton(onPressed: () {}, icon: const Icon(Icons.edit_rounded))
         ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.maxFinite,
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: <Widget>[
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: CircleAvatar(
-                      radius: deviceWidth * 0.2,
-                      backgroundImage: NetworkImage(
-                        isLoggedIn ? profileImgUrl : defaultImg,
-                      ),
-                    ),
-                  ),
-                  if (!isLoggedIn)
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => const SignUpScreen()),
-                          );
-                        },
-                        child: const Text('Sign Up')),
-                  if (isLoggedIn)
-                    Container(
-                      constraints: BoxConstraints(maxWidth: deviceWidth * 0.4),
-                      child: FittedBox(
-                        child: Text(
-                          userName.toUpperCase(),
-                          textScaleFactor: 1.3,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (isLoggedIn)
-                    Container(
-                      constraints: BoxConstraints(maxWidth: deviceWidth * 0.8),
-                      child: FittedBox(
-                        child: Text(
-                          email,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w300,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                      ),
-                    )
-                ],
-              ),
-              const SizedBox(height: 30),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Heading(text: 'Details'),
+      body: FutureBuilder(
+          future: getUser(userId),
+          builder: (context, AsyncSnapshot snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-                  // const Heading(text: 'Contact'),
-                  CustomListTile(
-                    title: contact,
-                    leading: const Icon(
-                      Icons.phone,
+            if (snapshot.data["status"] != "success") {
+              return Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  foregroundColor: Colors.black,
+                ),
+                body: const Center(
+                  child: Text("Failed to load data."),
+                ),
+              );
+            }
+            final userData = snapshot.data["data"];
+            log(userData.toString());
+            final String profileImgUrl = userData["photo"];
+            final String userName = userData["name"];
+            final String email = userData["email"];
+            final String dob = DateFormat("dd-MMMM-yyyy")
+                .format(DateTime.parse(userData["dob"]));
+            final String aadhar = userData["aadhar"];
+            final String aadress = userData["address"];
+            final String contact = userData["contact"];
+            return SingleChildScrollView(
+              child: Container(
+                width: double.maxFinite,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: <Widget>[
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: CircleAvatar(
+                            radius: deviceWidth * 0.2,
+                            backgroundImage: NetworkImage(
+                              isLoggedIn ? profileImgUrl : defaultImg,
+                            ),
+                          ),
+                        ),
+                        if (!isLoggedIn)
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const SignUpScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text('Sign Up'),
+                          ),
+                        if (isLoggedIn)
+                          Container(
+                            constraints:
+                                BoxConstraints(maxWidth: deviceWidth * 0.4),
+                            child: FittedBox(
+                              child: Text(
+                                userName.toUpperCase(),
+                                textScaleFactor: 1.3,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (isLoggedIn)
+                          Container(
+                            constraints:
+                                BoxConstraints(maxWidth: deviceWidth * 0.8),
+                            child: FittedBox(
+                              child: Text(
+                                email,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.blueGrey,
+                                ),
+                              ),
+                            ),
+                          )
+                      ],
                     ),
-                  ),
-                  // const Heading(text: 'D.O.B'),
-                  CustomListTile(
-                    title: dob,
-                    leading: const Icon(
-                      Icons.calendar_month,
-                    ),
-                  ),
-                  // const Heading(text: 'Aadhar Number'),
-                  CustomListTile(
-                    title: aadhar,
-                    leading:
-                        const ImageIcon(AssetImage('assets/images/aadhar.png')),
-                  ),
-                  // const Heading(text: 'Address'),
-                  CustomListTile(
-                    title: aadress,
-                    leading: const Icon(
-                      Icons.pin_drop_rounded,
-                    ),
-                  ),
-                  const Heading(text: 'Your Cards'),
-                  const CustomListTile(
-                    title: '**** **** **45',
-                    leading: Icon(Icons.credit_card),
-                  ),
-                  const CustomListTile(
-                    title: '**** **** **58',
-                    leading: Icon(Icons.credit_card),
-                  ),
-                  const CustomListTile(
-                    title: '**** **** **26',
-                    leading: Icon(Icons.credit_card),
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
+                    const SizedBox(height: 30),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Heading(text: 'Details'),
+
+                        // const Heading(text: 'Contact'),
+                        CustomListTile(
+                          title: contact,
+                          leading: const Icon(
+                            Icons.phone,
+                          ),
+                        ),
+                        // const Heading(text: 'D.O.B'),
+                        CustomListTile(
+                          title: dob,
+                          leading: const Icon(
+                            Icons.calendar_month,
+                          ),
+                        ),
+                        // const Heading(text: 'Aadhar Number'),
+                        CustomListTile(
+                          title: aadhar,
+                          leading: const ImageIcon(
+                              AssetImage('assets/images/aadhar.png')),
+                        ),
+                        // const Heading(text: 'Address'),
+                        CustomListTile(
+                          title: aadress,
+                          leading: const Icon(
+                            Icons.pin_drop_rounded,
+                          ),
+                        ),
+                        const Heading(text: 'Your Cards'),
+                        const CustomListTile(
+                          title: '**** **** **45',
+                          leading: Icon(Icons.credit_card),
+                        ),
+                        const CustomListTile(
+                          title: '**** **** **58',
+                          leading: Icon(Icons.credit_card),
+                        ),
+                        const CustomListTile(
+                          title: '**** **** **26',
+                          leading: Icon(Icons.credit_card),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            );
+          }),
     );
   }
 }

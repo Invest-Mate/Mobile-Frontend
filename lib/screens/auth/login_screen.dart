@@ -1,6 +1,12 @@
+import 'dart:developer';
+
 import 'package:crowd_application/screens/home/home_screen.dart';
+import 'package:crowd_application/services/5.auth_services.dart';
+import 'package:crowd_application/widgets/wrapper.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -10,12 +16,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _phoneNumber = TextEditingController();
+  final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
 
-  final bool _isLoading = false;
+  bool _isLoading = false;
   InputDecoration? _decoration(String hintText) {
     return InputDecoration(
       hintText: hintText,
@@ -37,10 +43,47 @@ class _LoginScreenState extends State<LoginScreen> {
     final deviceWidth = MediaQuery.of(context).size.width;
 
     //define functions below
-    tryLogin() {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+    tryLogin() async {
+      bool isValid = _formkey.currentState!.validate();
+      if (!isValid) {
+        return;
+      }
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _email.text.trim(),
+          password: _password.text.trim(),
+        );
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const Wrapper()),
+        );
+      } catch (e) {
+        log(e.toString());
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
+
+    trySignupWithGoogle() async {
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        await AuthService.firebase().signInWithGoogle();
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const Wrapper()),
+        );
+      } on FirebaseAuthException catch (e) {
+        log(e.message.toString());
+      } on PlatformException catch (e) {
+        log(e.message.toString());
+      } catch (e) {}
+      setState(() {
+        _isLoading = false;
+      });
     }
 
     return Scaffold(
@@ -97,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             dashPattern: const [5, 3],
                             child: TextFormField(
                               keyboardType: TextInputType.emailAddress,
-                              controller: _phoneNumber,
+                              controller: _email,
                               decoration: _decoration('Email Address'),
                               textAlign: TextAlign.center,
                               validator: (text) {
@@ -160,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Text(
-                          _isLoading ? 'Sending OTP' : 'Sign in',
+                          _isLoading ? 'Loading' : 'Sign in',
                           style: const TextStyle(
                             color: Colors.white,
                             // color: Colors.deepOrange,
@@ -201,7 +244,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         primary: Colors.grey[100],
                         elevation: 0,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        trySignupWithGoogle();
+                      },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: const [

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crowd_application/widgets/fund_item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,9 +14,7 @@ class MyFundsScreen extends StatefulWidget {
 }
 
 class _MyFundsScreenState extends State<MyFundsScreen> {
-  String userId = "62671c58b807c39f20bbc4d0";
-
-  Future getMyFunds() async {
+  Future getMyFunds(String userId) async {
     Map result = {};
     try {
       List allFunds = [];
@@ -44,6 +43,7 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cUser = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -68,60 +68,64 @@ class _MyFundsScreenState extends State<MyFundsScreen> {
           ],
         ),
       ),
-      body: FutureBuilder(
-        future: getMyFunds(),
-        builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SizedBox(
-              height: double.maxFinite,
-              width: double.maxFinite,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-          if (snapshot.data["status"] != "success") {
-            return const SizedBox(
-              height: double.maxFinite,
-              width: double.maxFinite,
-              child: Center(
-                child: Text(
-                  "No funds were found.",
-                  textScaleFactor: 1.5,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            );
-          }
+      body: cUser != null
+          ? FutureBuilder(
+              future: getMyFunds(cUser.uid),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    height: double.maxFinite,
+                    width: double.maxFinite,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+                if (snapshot.data["status"] != "success") {
+                  return const SizedBox(
+                    height: double.maxFinite,
+                    width: double.maxFinite,
+                    child: Center(
+                      child: Text(
+                        "No funds were found.",
+                        textScaleFactor: 1.5,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                }
 
-          final myfunds = snapshot.data["data"];
+                final myfunds = snapshot.data["data"];
 
-          return SingleChildScrollView(
-            child: Container(
-              constraints: const BoxConstraints(),
-              width: double.maxFinite,
-              child: ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: myfunds.length,
-                  itemBuilder: (context, i) {
-                    int rAmount = myfunds[i]['receivedAmount'];
-                    int tAmount = myfunds[i]['projectedAmount'];
-                    String imageUrl = myfunds[i]['imageCover'];
-                    return FundItem(
-                      title: myfunds[i]['title'],
-                      imageUrl: imageUrl,
-                      receivedAmount: rAmount.toDouble(),
-                      totalAmount: tAmount.toDouble(),
-                      lastDate: DateTime.parse(myfunds[i]['lastDate']),
-                      fundId: myfunds[i]["_id"],
-                      isMyFund: true,
-                    );
-                  }),
+                return SingleChildScrollView(
+                  child: Container(
+                    constraints: const BoxConstraints(),
+                    width: double.maxFinite,
+                    child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: myfunds.length,
+                        itemBuilder: (context, i) {
+                          int rAmount = myfunds[i]['receivedAmount'];
+                          int tAmount = myfunds[i]['projectedAmount'];
+                          String imageUrl = myfunds[i]['imageCover'];
+                          return FundItem(
+                            title: myfunds[i]['title'],
+                            imageUrl: imageUrl,
+                            receivedAmount: rAmount.toDouble(),
+                            totalAmount: tAmount.toDouble(),
+                            lastDate: DateTime.parse(myfunds[i]['lastDate']),
+                            fundId: myfunds[i]["_id"],
+                            isMyFund: true,
+                          );
+                        }),
+                  ),
+                );
+              },
+            )
+          : const Center(
+              child: Text("Login First."),
             ),
-          );
-        },
-      ),
     );
   }
 }

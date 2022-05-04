@@ -1,10 +1,14 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crowd_application/screens/analytics/analytics_screen.dart';
 import 'package:crowd_application/screens/campaign_detail/proof_preview_widget.dart';
+import 'package:crowd_application/utils/url_launcher.dart';
+import 'package:dart_ipify/dart_ipify.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -33,8 +37,23 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
     return document;
   }
 
+  Future openPaymentGateway(String userId, String fundId) async {
+    try {
+      String ipAddress = await Ipify.ipv64();
+
+      MyUrlLauncher launcher = MyUrlLauncher();
+      final uri = Uri.parse(
+          "https://fundzer.herokuapp.com/api/transaction/payment?userId=$userId&&fundId=$fundId&&ip=$ipAddress");
+      launcher.launchInWebViewOrVC(uri);
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final cUser = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
       body: FutureBuilder(
           future: getFundDetails(),
@@ -44,6 +63,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                 child: CircularProgressIndicator(),
               );
             }
+
             if (snapshot.data["status"] != "success") {
               return Scaffold(
                 appBar: AppBar(
@@ -51,10 +71,13 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                   elevation: 0,
                   foregroundColor: Colors.black,
                 ),
+                body: const Center(
+                  child: Text("Failed to load data."),
+                ),
               );
             }
             final fundData = snapshot.data["data"];
-
+            log(fundData.toString());
             // amount
             final receivedAmount = fundData["receivedAmount"];
             final totalAmount = fundData["projectedAmount"];
@@ -66,7 +89,6 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
 
             // proofs
             List proofs = fundData["proofs"];
-
             return CustomScrollView(slivers: <Widget>[
               SliverAppBar(
                 centerTitle: true,
@@ -315,15 +337,26 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                             primary: Colors.black,
                             padding: const EdgeInsets.symmetric(vertical: 15)),
                         onPressed: () {
-                          if (widget.isMyFund) {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => AnalyticsScreen(
-                                  fundId: widget.fundId,
-                                  ownerId: "",
-                                ),
-                              ),
+                          if (cUser == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Login or Signup first.")),
                             );
+                          } else {
+                            openPaymentGateway(
+                              cUser.uid.toString(),
+                              fundData["_id"].toString(),
+                            );
+                            if (widget.isMyFund) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => AnalyticsScreen(
+                                    fundId: widget.fundId,
+                                    ownerId: fundData["createdBy"],
+                                  ),
+                                ),
+                              );
+                            }
                           }
                         },
                         child: Text(widget.isMyFund

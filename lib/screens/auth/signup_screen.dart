@@ -1,7 +1,14 @@
+import 'dart:developer';
+
 import 'package:crowd_application/screens/auth/login_screen.dart';
 import 'package:crowd_application/screens/home/home_screen.dart';
+import 'package:crowd_application/services/3.auth_provider.dart';
+import 'package:crowd_application/services/5.auth_services.dart';
+import 'package:crowd_application/widgets/wrapper.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -11,13 +18,13 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController _phoneNumber = TextEditingController();
+  final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _passwordConfirm = TextEditingController();
 
   final _formkey = GlobalKey<FormState>();
 
-  final bool _isLoading = false;
+  bool _isLoading = false;
   InputDecoration? _decoration(String hintText) {
     return InputDecoration(
       hintText: hintText,
@@ -38,10 +45,51 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final deviceHeight = MediaQuery.of(context).size.height;
     final deviceWidth = MediaQuery.of(context).size.width;
     //define functions below
-    trySignup() {
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+    trySignupWithEmail() async {
+      bool isValid = _formkey.currentState!.validate();
+      if (!isValid) {
+        return;
+      }
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _email.text,
+          password: _password.text,
+        );
+
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const Wrapper()),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.toString(),
+              textAlign: TextAlign.center,
+              textScaleFactor: 1.5,
+            ),
+            backgroundColor: const Color.fromRGBO(254, 161, 21, 1),
+          ),
+        );
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
+
+    trySignupWithGoogle() async {
+      try {
+        await AuthService.firebase().signInWithGoogle();
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const Wrapper()),
+        );
+      } on FirebaseAuthException catch (e) {
+        log(e.message.toString());
+      } on PlatformException catch (e) {
+        log(e.message.toString());
+      } catch (e) {}
     }
 
     return Scaffold(
@@ -99,7 +147,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             dashPattern: const [5, 3],
                             child: TextFormField(
                               keyboardType: TextInputType.emailAddress,
-                              controller: _phoneNumber,
+                              controller: _email,
                               decoration: _decoration('Email Address'),
                               textAlign: TextAlign.center,
                               validator: (text) {
@@ -164,6 +212,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 if (text.length < 6) {
                                   return 'Please enter a longer password';
                                 }
+                                if (_password.text.trim() !=
+                                    _passwordConfirm.text.trim()) {
+                                  return "Passwords do not match";
+                                }
 
                                 return null;
                               },
@@ -189,12 +241,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       onPressed: _isLoading
                           ? null
                           : () {
-                              trySignup();
+                              trySignupWithEmail();
                             },
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
                         child: Text(
-                          _isLoading ? 'Sending OTP' : 'Sign up',
+                          _isLoading ? 'Loading' : 'Sign up',
                           style: const TextStyle(
                             color: Colors.white,
                             // color: Colors.deepOrange,
@@ -235,7 +287,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         elevation: 0,
                       ),
                       onPressed: () {
-                        // _signGoogle();
+                        trySignupWithGoogle();
                       },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
