@@ -49,47 +49,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final bool isLoggedIn =
         FirebaseAuth.instance.currentUser != null ? true : false;
     final double deviceWidth = MediaQuery.of(context).size.width;
-    final userId = FirebaseAuth.instance.currentUser!.uid;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.black,
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.edit_rounded))
-        ],
       ),
       body: FutureBuilder(
-          future: getUser(userId),
+          future: !isLoggedIn
+              ? null
+              : getUser(FirebaseAuth.instance.currentUser!.uid),
           builder: (context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-
-            if (snapshot.data["status"] != "success") {
-              return Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  foregroundColor: Colors.black,
-                ),
-                body: const Center(
-                  child: Text("Failed to load data."),
-                ),
+            String profileImgUrl = "";
+            String userName = "username";
+            String email = "email";
+            String dob = "Date of Birth";
+            String aadhar = "Aadhar Number";
+            String aadress = "Address";
+            String contact = "Contact Number";
+            if (isLoggedIn) {
+              if (snapshot.data["status"] != "success") {
+                return Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    foregroundColor: Colors.black,
+                  ),
+                  body: const Center(
+                    child: Text("Failed to load data."),
+                  ),
+                );
+              }
+              final userData = snapshot.data["data"];
+              log(userData.toString());
+              profileImgUrl = userData["photo"];
+              userName = userData["name"];
+              email = userData["email"];
+              dob = DateFormat("dd-MMMM-yyyy").format(
+                DateTime.parse(userData["dob"]),
               );
+              aadhar = userData["aadhar"];
+              aadress = userData["address"];
+              contact = userData["contact"];
             }
-            final userData = snapshot.data["data"];
-            log(userData.toString());
-            final String profileImgUrl = userData["photo"];
-            final String userName = userData["name"];
-            final String email = userData["email"];
-            final String dob = DateFormat("dd-MMMM-yyyy")
-                .format(DateTime.parse(userData["dob"]));
-            final String aadhar = userData["aadhar"];
-            final String aadress = userData["address"];
-            final String contact = userData["contact"];
+
             return SingleChildScrollView(
               child: Container(
                 width: double.maxFinite,
@@ -118,6 +127,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                               );
                             },
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.black),
                             child: const Text('Sign Up'),
                           ),
                         if (isLoggedIn)
@@ -183,19 +194,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           leading: const Icon(
                             Icons.pin_drop_rounded,
                           ),
-                        ),
-                        const Heading(text: 'Your Cards'),
-                        const CustomListTile(
-                          title: '**** **** **45',
-                          leading: Icon(Icons.credit_card),
-                        ),
-                        const CustomListTile(
-                          title: '**** **** **58',
-                          leading: Icon(Icons.credit_card),
-                        ),
-                        const CustomListTile(
-                          title: '**** **** **26',
-                          leading: Icon(Icons.credit_card),
                         ),
                       ],
                     )

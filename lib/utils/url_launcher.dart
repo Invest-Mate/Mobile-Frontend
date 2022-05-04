@@ -14,9 +14,11 @@ class MyUrlLauncher {
   Future<void> launchInWebViewOrVC(Uri url) async {
     if (!await launchUrl(
       url,
-      mode: LaunchMode.inAppWebView,
+      mode: LaunchMode.platformDefault,
       webViewConfiguration: const WebViewConfiguration(
-          headers: <String, String>{'my_header_key': 'my_header_value'}),
+        enableJavaScript: true,
+        enableDomStorage: true,
+      ),
     )) {
       throw 'Could not launch $url';
     }

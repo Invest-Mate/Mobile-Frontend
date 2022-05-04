@@ -34,8 +34,7 @@ class FileUpload {
     for (var proof in proofs) {
       var prooflength = await proof.length();
       // ignore: deprecated_member_use
-      var proofStream = http.ByteStream(proof.openRead());
-      proofStream.cast();
+      var proofStream = http.ByteStream(proof.openRead())..cast();
       var proofFile = http.MultipartFile(
         'proofs',
         proofStream,

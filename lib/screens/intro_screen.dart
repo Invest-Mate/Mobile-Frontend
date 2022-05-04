@@ -65,6 +65,9 @@ class _IntroScreenState extends State<IntroScreen> {
                           builder: (context) => const SignUpScreen()),
                     );
                   },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.black,
+                  ),
                   child: const Text('Sign up!'),
                 )
               ],
