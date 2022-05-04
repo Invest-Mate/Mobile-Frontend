@@ -343,10 +343,6 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                                   content: Text("Login or Signup first.")),
                             );
                           } else {
-                            openPaymentGateway(
-                              cUser.uid.toString(),
-                              fundData["_id"].toString(),
-                            );
                             if (widget.isMyFund) {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -355,6 +351,11 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                                     ownerId: fundData["createdBy"],
                                   ),
                                 ),
+                              );
+                            } else {
+                              openPaymentGateway(
+                                cUser.uid.toString(),
+                                fundData["_id"].toString(),
                               );
                             }
                           }
