@@ -63,7 +63,6 @@ class _SignUpFormState extends State<SignUpForm> {
           "address": _aadress.text.trim(),
           "dob": dob!.toIso8601String(),
           "userId": userId,
-          "contact": "9172398229",
           "_id": userId,
           "name": _name.text.trim(),
         }),

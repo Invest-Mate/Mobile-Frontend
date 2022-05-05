@@ -2,12 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:crowd_application/screens/add_fundraiser/upload_fund.dart';
 import 'package:crowd_application/screens/auth/signup_screen.dart';
-import 'package:crowd_application/screens/home/home_screen.dart';
-import 'package:crowd_application/utils/file_picker.dart';
-import 'package:crowd_application/utils/upload_file.dart';
-import 'package:file_picker/file_picker.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             String aadhar = "Aadhar Number";
             String aadress = "Address";
             String contact = "Contact Number";
+            String googleImg = "none";
             if (isLoggedIn) {
               if (snapshot.data["status"] != "success") {
                 return Scaffold(
@@ -87,7 +84,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               }
               final userData = snapshot.data["data"];
-              log(userData.toString());
+
+              if (FirebaseAuth.instance.currentUser!.photoURL != null) {
+                googleImg = FirebaseAuth.instance.currentUser!.photoURL!;
+              }
+              log(googleImg.toString());
               if (userData != null) {
                 profileImgUrl = userData["photo"];
                 userName = userData["name"];
@@ -97,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
                 aadhar = userData["aadhar"];
                 aadress = userData["address"];
-                contact = userData["contact"];
+                contact = userData["contact"] ?? "Not Linked";
               }
             }
 
@@ -116,7 +117,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: CircleAvatar(
                             radius: deviceWidth * 0.2,
                             backgroundImage: NetworkImage(
-                              isLoggedIn ? profileImgUrl : defaultImg,
+                              isLoggedIn
+                                  ? googleImg != "none"
+                                      ? googleImg
+                                      : profileImgUrl
+                                  : defaultImg,
                             ),
                           ),
                         ),
@@ -236,6 +241,8 @@ class CustomListTile extends StatelessWidget {
         minLeadingWidth: 20,
         title: Text(
           title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           textScaleFactor: 1,
           style: const TextStyle(
             // fontSize: 14,
