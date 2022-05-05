@@ -63,7 +63,6 @@ class _SignUpFormState extends State<SignUpForm> {
           "address": _aadress.text.trim(),
           "dob": dob!.toIso8601String(),
           "userId": userId,
-          "contact": "9172398229",
           "_id": userId,
           "name": _name.text.trim(),
         }),
@@ -71,18 +70,17 @@ class _SignUpFormState extends State<SignUpForm> {
       final response = jsonDecode(createFundRes.body);
       log(response.toString());
       // uploading image files through patch
-      Timer(Duration(seconds: 5), () {
-        final file = FileUpload();
 
-        file.updateProfile(
-          profileImage: profilePic!,
-          id: userId,
-          url: "https://fundzer.herokuapp.com/api/user/update-user",
-        );
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-      });
+      final file = FileUpload();
+
+      file.updateProfile(
+        profileImage: profilePic!,
+        id: userId,
+        url: "https://fundzer.herokuapp.com/api/user/update-user",
+      );
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
     } catch (e) {
       print(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(

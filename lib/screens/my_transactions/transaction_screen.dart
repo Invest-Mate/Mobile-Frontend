@@ -93,8 +93,9 @@ class TransactionScreen extends StatelessWidget {
             final String phoneNumber = snapshotData["trans_phn"].toString();
             final String holderName = snapshotData["trans_name"];
             final DateTime date = DateTime.parse(snapshotData["trans_date"]);
+            log(snapshotData["status"].toString());
             bool isSuccessful =
-                snapshot.data["status"] == "TXN_SUCCESS" ? true : false;
+                snapshotData["status"] == "TXN_SUCCESS" ? true : false;
 
             //
             return SingleChildScrollView(
