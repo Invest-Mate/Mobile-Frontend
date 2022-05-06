@@ -31,12 +31,12 @@ class _IntroScreenState extends State<IntroScreen> {
         ),
       ),
       PageViewModel(
-        title: "Title of second page",
+        title: "Why Donate to Funds ?",
         bodyWidget: const Center(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: Text(
-              'Crowdfunding is the practice of funding a project or venture by raising money from a large number of people, in modern times typically via the Internet.',
+              'Crowdfunding helps people who need it. Charity is not just for the ultra-wealthy and you can donate any amount of money. Your donation can make the world a better place. Someday you might be benifiting from a fund that you donated to years ago.',
               textAlign: TextAlign.center,
             ),
           ),
@@ -44,7 +44,7 @@ class _IntroScreenState extends State<IntroScreen> {
         image: Image.asset('assets/images/intro-img2.png'),
       ),
       PageViewModel(
-        title: "Title of third page",
+        title: "Why use Fundzer?",
         bodyWidget: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -52,7 +52,7 @@ class _IntroScreenState extends State<IntroScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text(
-                  'Crowdfunding is the practice of funding a project or venture by raising money from a large number of people, in modern times typically via the Internet.',
+                  'Find Top Trending Funds everyday. Choose your fund amoung a vast variety. You can raise your own Fundraiser.Fund Amount is directly credited to your account without us intercepting the process.',
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(

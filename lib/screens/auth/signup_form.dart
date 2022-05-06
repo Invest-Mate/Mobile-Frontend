@@ -71,13 +71,13 @@ class _SignUpFormState extends State<SignUpForm> {
       log(response.toString());
       // uploading image files through patch
 
-      final file = FileUpload();
+      // final file = FileUpload();
 
-      file.updateProfile(
-        profileImage: profilePic!,
-        id: userId,
-        url: "https://fundzer.herokuapp.com/api/user/update-user",
-      );
+      // file.updateProfile(
+      //   profileImage: profilePic!,
+      //   id: userId,
+      //   url: "https://fundzer.herokuapp.com/api/user/update-user",
+      // );
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
@@ -105,290 +105,293 @@ class _SignUpFormState extends State<SignUpForm> {
       body: SafeArea(
           child: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Column(
-              children: <Widget>[
-                // show image
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: profilePic != null
-                          ? Colors.white
-                          : Colors.blueGrey[100],
-                    ),
-                    height: MediaQuery.of(context).size.width * 0.5,
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    child: profilePic != null
-                        ? Image.file(
-                            profilePic!,
-                            fit: BoxFit.cover,
-                          )
-                        : const Center(
-                            child: Text(
-                              "Profile Picture",
-                              textAlign: TextAlign.center,
-                              textScaleFactor: 1.2,
-                            ),
-                          ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    MyFilePicker myFilePicker = MyFilePicker();
-                    File? pickedFile =
-                        await myFilePicker.showPicker(FileType.image);
-                    if (pickedFile != null) {
-                      setState(() {
-                        profilePic = pickedFile;
-                      });
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Column(
+            children: <Widget>[
+              // show image
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(vertical: 20.0),
+              //   child: Container(
+              //     clipBehavior: Clip.antiAlias,
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(20),
+              //       color: profilePic != null
+              //           ? Colors.white
+              //           : Colors.blueGrey[100],
+              //     ),
+              //     height: MediaQuery.of(context).size.width * 0.5,
+              //     width: MediaQuery.of(context).size.width * 0.5,
+              //     child: profilePic != null
+              //         ? Image.file(
+              //             profilePic!,
+              //             fit: BoxFit.cover,
+              //           )
+              //         : const Center(
+              //             child: Text(
+              //               "Profile Picture",
+              //               textAlign: TextAlign.center,
+              //               textScaleFactor: 1.2,
+              //             ),
+              //           ),
+              //   ),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () async {
+              //     MyFilePicker myFilePicker = MyFilePicker();
+              //     File? pickedFile =
+              //         await myFilePicker.showPicker(FileType.image);
+              //     if (pickedFile != null) {
+              //       setState(() {
+              //         profilePic = pickedFile;
+              //       });
+              //     }
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     primary: Colors.black,
+              //   ),
+              //   child: const Text("Select Profile Image"),
+              // ),
+              //  name
+
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty || value == "") {
+                      return "Please Enter a valid Name.";
+                    } else if (value.length <= 10) {
+                      return "Enter longer name";
+                    } else if (value.length >= 40) {
+                      return "Enter short name";
                     }
+                    return null;
                   },
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.black,
+                  controller: _name,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15),
+                    labelStyle: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    floatingLabelStyle: const TextStyle(
+                      color: Colors.blueGrey,
+                    ),
+                    label: const Text("Full Name"),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 2,
+                        color: Colors.blueGrey[200]!,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2.5,
+                        color: Colors.red,
+                        // color: Colors.blue,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2.5,
+                        color: Colors.red,
+                        // color: Colors.blue,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2.5,
+                        color: Color.fromRGBO(254, 161, 21, 1),
+                        // color: Colors.blue,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                  child: const Text("Select Profile Image"),
                 ),
-                // date of birth
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 0.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      const Text('D.O.B: '),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(DateFormat('dd-MMMM-yyyy').format(dob!)),
-                          IconButton(
-                            onPressed: () async {
-                              DateTime? date = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1950),
-                                lastDate: DateTime.now(),
-                              );
-                              if (date != null) {
-                                setState(() {
-                                  dob = date;
-                                });
-                              }
-                            },
-                            icon: const Icon(
-                              Icons.calendar_month,
-                            ),
+              ),
+
+              // date of birth
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 0.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    const Text('D.O.B: '),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(DateFormat('dd-MMMM-yyyy').format(dob!)),
+                        IconButton(
+                          onPressed: () async {
+                            DateTime? date = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1950),
+                              lastDate: DateTime.now(),
+                            );
+                            if (date != null) {
+                              setState(() {
+                                dob = date;
+                              });
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.calendar_month,
                           ),
-                        ],
-                      )
-                    ],
-                  ),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-                //  name
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value!.isEmpty || value == "") {
-                        return "Please Enter a valid Name.";
-                      } else if (value.length <= 10) {
-                        return "Enter longer name";
-                      } else if (value.length >= 40) {
-                        return "Enter short name";
-                      }
-                      return null;
-                    },
-                    controller: _name,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 15),
-                      labelStyle: const TextStyle(
-                        color: Colors.black,
+              ),
+              // address
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty || value == "") {
+                      return "Please Enter a valid Description.";
+                    }
+                    return null;
+                  },
+                  controller: _aadress,
+                  maxLines: 2,
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15),
+                    labelStyle: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    floatingLabelStyle: const TextStyle(
+                      color: Colors.blueGrey,
+                    ),
+                    label: const Text("Address"),
+                    // floatingLabelAlignment: FloatingLabelAlignment.start,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 2,
+                        color: Colors.blueGrey[200]!,
                       ),
-                      floatingLabelStyle: const TextStyle(
-                        color: Colors.blueGrey,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2.5,
+                        color: Colors.red,
+                        // color: Colors.blue,
                       ),
-                      label: const Text("Full Name"),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: 2,
-                          color: Colors.blueGrey[200]!,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2.5,
+                        color: Colors.red,
+                        // color: Colors.blue,
                       ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 2.5,
-                          color: Colors.red,
-                          // color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2.5,
+                        color: Color.fromRGBO(254, 161, 21, 1),
+                        // color: Colors.blue,
                       ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 2.5,
-                          color: Colors.red,
-                          // color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 2.5,
-                          color: Color.fromRGBO(254, 161, 21, 1),
-                          // color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
-                // address
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextFormField(
-                    validator: (value) {
-                      if (value!.isEmpty || value == "") {
-                        return "Please Enter a valid Description.";
-                      }
-                      return null;
-                    },
-                    controller: _aadress,
-                    maxLines: 2,
-                    textAlignVertical: TextAlignVertical.top,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 15),
-                      labelStyle: const TextStyle(
-                        color: Colors.black,
+              ),
+              // AADHAR
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value!.isEmpty || value == "") {
+                      return "Please Enter a valid Name.";
+                    } else if (value.length != 12) {
+                      return "Enter Correct Aadhar Number";
+                    }
+                    return null;
+                  },
+                  controller: _aadhar,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 15),
+                    labelStyle: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    floatingLabelStyle: const TextStyle(
+                      color: Colors.blueGrey,
+                    ),
+                    label: const Text("Aadhar Number"),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 2,
+                        color: Colors.blueGrey[200]!,
                       ),
-                      floatingLabelStyle: const TextStyle(
-                        color: Colors.blueGrey,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2.5,
+                        color: Colors.red,
+                        // color: Colors.blue,
                       ),
-                      label: const Text("Address"),
-                      // floatingLabelAlignment: FloatingLabelAlignment.start,
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: 2,
-                          color: Colors.blueGrey[200]!,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2.5,
+                        color: Colors.red,
+                        // color: Colors.blue,
                       ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 2.5,
-                          color: Colors.red,
-                          // color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2.5,
+                        color: Color.fromRGBO(254, 161, 21, 1),
+                        // color: Colors.blue,
                       ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 2.5,
-                          color: Colors.red,
-                          // color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 2.5,
-                          color: Color.fromRGBO(254, 161, 21, 1),
-                          // color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
-                // AADHAR
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextFormField(
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value!.isEmpty || value == "") {
-                        return "Please Enter a valid Name.";
-                      } else if (value.length != 12) {
-                        return "Enter Correct Aadhar Number";
-                      }
-                      return null;
-                    },
-                    controller: _aadhar,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 15),
-                      labelStyle: const TextStyle(
-                        color: Colors.black,
-                      ),
-                      floatingLabelStyle: const TextStyle(
-                        color: Colors.blueGrey,
-                      ),
-                      label: const Text("Aadhar Number"),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          width: 2,
-                          color: Colors.blueGrey[200]!,
-                        ),
+              ),
+              // upload button
+              Expanded(
+                child: Container(),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 20),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.maxFinite, 20),
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 2.5,
-                          color: Colors.red,
-                          // color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 2.5,
-                          color: Colors.red,
-                          // color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                          width: 2.5,
-                          color: Color.fromRGBO(254, 161, 21, 1),
-                          // color: Colors.blue,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
+                      primary: Colors.black,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 15,
+                      )),
+                  onPressed: () {
+                    uploadData(uId, email);
+                  },
+                  child: _isUploading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Sign UP'),
                 ),
-                // upload button
-                Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 20),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.maxFinite, 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        primary: Colors.black,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                        )),
-                    onPressed: () {
-                      uploadData(uId, email);
-                    },
-                    child: _isUploading
-                        ? const Center(
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text('Sign UP'),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       )),
