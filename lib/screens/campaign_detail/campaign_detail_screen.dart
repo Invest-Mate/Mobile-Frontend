@@ -356,10 +356,21 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen> {
                                 ),
                               );
                             } else {
-                              openPaymentGateway(
-                                cUser.uid.toString(),
-                                fundData["_id"].toString(),
-                              );
+                              if (DateTime.parse(fundData["lastDate"])
+                                  .isBefore(DateTime.now())) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Last date of donation has passed.",
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                openPaymentGateway(
+                                  cUser.uid.toString(),
+                                  fundData["_id"].toString(),
+                                );
+                              }
                             }
                           }
                         },
